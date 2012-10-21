@@ -1,0 +1,418 @@
+%
+% Diplomarbeit mit Latex
+% ===========================================================================
+%
+% Edited and enhanced headerfile by Peter Hense
+% (2010)
+%
+\documentclass[%
+    pdftex,%              PDFTex verwenden
+    a4paper,%             A4 Papier
+    oneside,%             Einseitig (für scrbook zweiseitig einstellen!)  beachte ihead/ohead
+    headsepline,%         Linie nach Kopfzeile
+    footsepline,%         Linie vor Fusszeile
+    12pt,%                Größere Schrift, besser lesbar am bildschirm
+    %titlepage            starts a new page for a new document title. Default in scrbook, but not in article
+]{scrbook}%               scrartcl für ohne Chapters, sonst scrreprt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Pagedesign
+%%
+\usepackage{geometry}
+%% Layoutanforderung:
+\geometry{verbose,a4paper,tmargin=3cm,bmargin=3cm,lmargin=4cm,rmargin=2cm}
+\usepackage{lscape}
+%% leere letzte Seite
+\usepackage{lastpage}
+%% Element fest positionieren
+\usepackage{float}
+\usepackage{floatflt}
+\usepackage{nonfloat}
+%% Befehl, damit alle float-Elemente bis zu dem Punkt positioniert werden -> \FloatBarrier
+\usepackage{placeins}
+
+%
+% Abstände zwischen Abschnitten und Zeilen
+%
+\setlength{\parindent}{0ex}                                                 % Einzug erste Zeile neues Kapitel
+\setlength{\parskip}{2.0ex plus 0.9ex minus 0.4ex}     % Lücke zwischen zwei Absätzen
+%
+% Zeilenabstand auf 1,5 Zeilen (Anforderung Diplomarbeiten)
+%
+\usepackage{setspace}%
+\onehalfspacing
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Inhaltsverzeichnis und Titelseite   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{titletoc}
+
+%% Index, TOC, Bibliography mit ins Inhaltsverzeichnis aufnehmen
+%\usepackage[nottoc]{tocbibind}
+
+%% Ebenen des Toc neu definieren (kann Ebenen tiefer anzeigen.
+%% Ab \chapter 3 Ebenen tiefer
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+%%%%%%%%%%%%%%
+% Fußnoten   %
+%%%%%%%%%%%%%%
+%
+%% Speichert Fußnoten
+%
+\usepackage{savefnmark}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Kopf und Fußzeilen    %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[automark,headsepline,nouppercase]{scrpage2}
+%% Abstand der Kapitelüberschrift von der Kopfzeile
+\renewcommand*{\chapterheadstartvskip}{\vspace*{-\topskip}}
+%% Auch bei Kapitelüberschriften Kopfzeile anwenden
+\renewcommand*{\chapterpagestyle}{scrheadings}
+\renewcommand*{\indexpagestyle}{scrheadings}
+
+%
+% Kopf und Fußzeilen anpassen
+%
+%% Komascript Kopfzeilen
+\pagestyle{scrheadings}
+%% Kapitelüberschriften in den headern automatisch aktualisieren.
+\automark[chapter]{chapter}
+%% Felder zurücksetzen
+\clearscrheadfoot
+%% linke Kopfzeile (für zweiseitig -> scrbook)
+%\ihead[\headmark]{\headmark}
+%% rechte Kopfzeile (einseitige Dokumente)
+%% durch Angabe des optionalen Parameters ändert man scrplain mit!
+\ohead[\headmark]{\headmark}
+%% rechte Fußzeile: Seitenzahl (\thepage)
+\ofoot[\pagemark]{\pagemark}
+%% Kopfzeilentext + Linie: Verschiebung vom linken Rand weg, Breite der Kopfzeile
+\setheadwidth[0pt]{text}
+%% Stärke der Trennlinie zum Text
+\setheadsepline{.4pt}
+
+%
+% alternative: sepline centered:
+%
+% \usepackage[footsepline, footbotline]{scrpage2}
+% \setfootbotline{2pt}
+% \setfootsepline[text]{.4pt}
+% \setfootwidth[0pt]{textwithmarginpar}
+
+
+%%%%%%%%%%%%%%%%%%%%
+% Schriftarten     %
+%%%%%%%%%%%%%%%%%%%%
+
+% Schriften
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ae}
+\usepackage{verbatim}
+
+%% Verwendung von "`Times"'
+%\usepackage{times}
+%\usepackage{mathptmx}           % Times + passende Mathefonts
+
+
+%% Verwendung von "`Garamond"'
+%\renewcommand{\rmdefault}{ugm}
+%\usepackage[urw-garamond]{mathdesign}
+
+%
+% Paket für Darstellung im Deutschen
+%
+\usepackage[ngerman]{babel}
+\usepackage[babel,german=quotes]{csquotes}
+
+%
+% Type 1 Fonts für bessere darstellung in PDF verwenden.
+%
+%\usepackage[scaled=.92]{helvet} % skalierte Helvetica als \sfdefault
+\usepackage{courier}            % Courier als \ttdefault
+
+%
+% Spezielle Schrift verwenden.
+%
+%\renewcommand{\encodingdefault}{T1}
+
+%
+% Spezielle Schrift im Koma-Script setzen.
+%
+\setkomafont{sectioning}{\normalfont\bfseries}
+\setkomafont{captionlabel}{\normalfont\bfseries}
+\setkomafont{pageheadfoot}{\normalfont\itshape}
+\setkomafont{descriptionlabel}{\normalfont\bfseries}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tabellenüber- und Abbildungsunterschriften  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage[font=small, labelfont=bf, format=hang]{caption}
+%\captionsetup[table]{position=above, belowskip=5pt, aboveskip=5pt}
+%\captionsetup[figure]{position=below, belowskip=5pt, aboveskip=5pt}
+\usepackage{tabularx}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PDF Generierung                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{pdfpages}
+\usepackage{pst-pdf}
+\usepackage{pstricks, pst-node, pst-plot, pst-math, pst-optic, pst-lens, pst-text, pst-xkey, pstricks-add}
+\usepackage{ifpdf}
+\ifpdf
+        \usepackage[
+            pdftex=true,
+            hyperfigures=true,
+            backref=false,
+            hyperindex=true,
+            bookmarksnumbered=true,
+            bookmarksopen=true,
+            colorlinks=true,
+            citecolor=black,
+            linkcolor=black,
+            urlcolor=black,
+            filecolor=magenta,
+            pdfborder={0 0 0},
+            plainpages=false
+            ]{hyperref}
+        \pdfinfo{
+            /Title (Seminararbeit)
+            /Subject (Webapplikationen mit Flask)
+            /Author (Adrian Mönnich)
+            /Keywords (Python Flask Werkzeug Framework WSGI)
+        }
+        \else
+            \usepackage[
+                hypertex=true,
+                hyperref=true,
+                backref=true,
+                hyperindex=true,
+                bookmarksnumbered=true,
+                colorlinks=true,
+                inkcolor=blue,
+                urlcolor=blue,
+                filecolor=magenta,
+                german
+            ]{hyperref}
+\fi
+
+%% Gesataltung von Hyperlinks
+\urlstyle{sc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Spezielle Ergänzungen für PS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Farben für PSforPDF definieren
+\usepackage{color}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MISC                                                  %
+%-------------------------------------------------------%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Paket für die Indexerstellung.
+%
+\usepackage{makeidx}
+
+%
+% Dictum-Breite vergrößern
+%
+\renewcommand*{\dictumwidth}{.6667\textwidth}
+
+
+%
+% Paket um Grafiken einbetten zu können
+%
+\usepackage{graphics}
+\usepackage[pdftex]{graphicx}       %% add PNG import capabilities
+\DeclareGraphicsRule{*}{mps}{*}{}
+
+%
+% mathematische symbole aus dem AMS Paket.
+%
+\usepackage{amsmath, amsthm, amssymb}
+%\usepackage{amssymb} % already included if you use a special math-font
+
+%
+% Paket um Textteile drehen zu können %
+%
+\usepackage{rotating}
+
+%
+% Befehle werden wiederholbar
+%
+\usepackage{multido}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Paket um Listings sauber zu formatieren    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[savemem]{listings}
+\definecolor{lightgray}{rgb}{0.98, 0.98, 0.98}
+\definecolor{darkgray}{rgb}{0.4, 0.4, 0.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+\definecolor{darkgreen}{cmyk}{0.7, 0, 1, 0.5}
+
+\lstdefinelanguage{JavaScript}{
+  morekeywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, for, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={this, self},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}[keywords,comments,strings]
+
+\lstdefinelanguage{diff}
+{
+    morekeywords={+, -},
+    sensitive=false,
+    morecomment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morecomment=[l][\color{darkgreen}]{+},
+    morecomment=[l][\color{red}]{-},
+    morestring=[b]",
+}
+
+
+\lstset{
+  language=JavaScript,                % choose the language of the code
+  basicstyle=\ttfamily,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\small,      % the size of the fonts that are used for the line-numbers
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{lightgray} ,% choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=lines,                    % adds a frame around the code
+  framesep=2mm,
+  tabsize=4,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=true,         % sets if automatic breaks should only happen at whitespace
+  numberbychapter=false,
+  aboveskip=0.75cm,
+  belowskip=0.5cm,
+  inputencoding=utf8
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Erweiterungen für Tabellen   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{colortab}
+\usepackage{colortbl}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Erweiterung für Listen   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{enumitem}
+\usepackage{expdlist}
+
+
+% Definition des Datums
+\usepackage{datetime}
+%\newdateformat{mydate}{\THEDAY.\THEMONTH.\THEYEAR}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Pakete und Einstellungen für Bibtex  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{natbib}
+\bibliographystyle{alpha}
+%\bibpunct{[}{]}{;}{}{}{,}
+
+\usepackage{pdfpages}
+
+% Draft watermark
+%\usepackage[firstpage]{draftwatermark}
+%\SetWatermarkText{PREVIEW}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Neue Umgebungen etc.                                                       %
+% ---------------------------------------------------------------------------%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\todotext}[1]{
+  {\color{red} TODO: #1} \normalfont
+}
+
+\addto\extrasngerman{
+  \renewcommand*{\sectionautorefname}{Abschnitt}
+  \renewcommand*{\subsectionautorefname}{Abschnitt}
+  \renewcommand*\lstlistlistingname{Listingverzeichnis}
+}
+
+\makeatletter
+\newcommand*{\textoverline}[1]{$\overline{\hbox{#1}}\m@th$}
+\makeatother
+
+\renewcommand*{\figureformat}{
+  \figurename~\thefigure
+}
+
+% Hyphenation
+\hyphenation{Java-Script Frame-work Parsing-Regeln objekt-orientierten stand-alone}
+
+% Counters anpassen
+\usepackage{chngcntr}
+\counterwithout{figure}{chapter}
+\counterwithout{footnote}{chapter}
+
+% Captions abschaltbar machen
+\usepackage{caption}
+
+% Bilder
+\newcommand{\img}[4]{
+  \begin{figure}[!hbt]
+    %\begin{center}
+    \centering
+      \vspace{1ex}
+      \includegraphics[width=#2]{images/#1}
+      \caption[#4]{\label{img.#1} #3}
+    %\end{center}
+    \vspace{1ex}
+  \end{figure}
+}
+
+\newcommand{\imga}[3]{
+  \begin{figure}[!hbt]
+    %\begin{center}
+    \centering
+      \vspace{1ex}
+      \includegraphics{images/#1}
+      \caption[#3]{\label{img.#1} #2}
+      \vspace{1ex}
+    %\end{center}
+  \end{figure}
+}
+
+\newcommand{\imgrot}[5]{
+  \begin{figure}[!hbt]
+    %\begin{center}
+    \centering
+      \vspace{1ex}
+      \includegraphics[width=#2,angle=#3]{images/#1}
+      \caption[#5]{\label{img.#1} #4}
+    %\end{center}
+    \vspace{1ex}
+  \end{figure}
+}
+
+%
+% EOF
+%
