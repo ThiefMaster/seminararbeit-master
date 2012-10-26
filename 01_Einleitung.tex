@@ -25,13 +25,16 @@ IndentationError: unexpected indent
 \end{lstlisting}
 
 
-\subsection{Webapplikationen}
+\section{Webapplikationen}
 
 Wie bereits zuvor erwähnt ist Python nicht speziell auf das Web zugeschnitten. Allerdings gibt es
 neben der Option, einen Python-basierten Webserver einzusetzen diverse Möglichkeiten, Python-Code
-über einen bereits vorhandenen Webserver auszuführen.
+über einen bereits vorhandenen Webserver auszuführen. Im Rahmen dieses Kapitels werden nur die
+bekanntesten Technologien kurz vorgestellt; neben diesen existieren noch weit verbreitete Lösungen
+wie \emph{mod\_wsgi} und das veraltete \emph{mod\_python}, die allerdings den
+\emph{Apache}-Webserver voraussetzen.
 
-\subsubsection{Python-basierte Webserver}
+\subsection{Python-basierte Webserver}
 
 Insbesondere während der Entwicklung bietet sich diese Lösung an, da man dadurch extrem flexibel
 ist und beispielsweise webbasierte Debugger nutzen kann und Informationen direkt auf der Shell, in
@@ -43,7 +46,7 @@ auf demselben System betreiben will - dies würde mehrere IP-Adressen bzw. Rever
 voraussetzen. Darüberhinaus gibt es sinnvolle Gründe, Webserver und Python-Interpreter voneinander
 zu trennen - beispielsweise um letzteren unter einem separaten Benutzeraccount laufen zu lassen.
 
-\subsubsection{CGI}
+\subsection{CGI}
 
 Das Common Gateway Interface, kurz CGI\footnote{\href{http://www.ietf.org/rfc/rfc3875}{RFC 3875}},
 ist der wohl bekannteste und älteste Standard, um externe Programme über einen Webserver
@@ -79,12 +82,55 @@ print
 print 'Hello %s' % form.getfirst('name', 'World')
 \end{lstlisting}
 
-\subsubsection{FastCGI}
+Bei der Verwendung von CGI entsprechen Teile der URL normalerweise gleichnamigen Pfaden im
+Dateisystem. So würde eine Anfrage nach \emph{/foo/bar.py} mit hoher Wahrscheinlichkeit von einer
+Datei namens \emph{bar.py} im Ordner \emph{foo} innerhalb des Document Roots, d.h. des obersten über
+HTTP erreichbaren Ordners verarbeitet werden. Im Falle einer Fehlkonfiguration des Webservers würde
+die Datei nicht ausgeführt werden sondern der Benutzer würde den Quellcode dieser Datei sehen -
+einschließlich möglicherweise enthaltener Datenbankzugangsdaten.
 
-\todotext{fcgi}
+\subsection{FastCGI}
 
-\subsubsection{WSGI}
+Ziel von FastCGI ist es, den Overhead von CGI zu vermeiden, indem nicht für jeden Request ein neuer
+Prozess gestartet wird sondern mehrere Prozesse dauerhaft laufen und der Webserver alle Anfragen für
+entsprechende URLs über ein Socket an diese Prozesse weitergibt.
 
-\todotext{wsgi}
+Dadurch ist es auch nicht mehr notwendig, die Applikation jedes Mal neu zu initialisieren, und der
+Python-Interpreter kann in einem separaten Prozess laufen der durchaus einen anderen Besitzer haben
+kann als der Webserver selbst.
 
-%WSGI\footnote{\href{http://www.python.org/dev/peps/pep-0333/}{Web Server Gateway Interface}}
+Python selbst unterstützt kein FastCGI, allerdings existieren diverse Drittanbieter-Module, die
+eine WSGI-Applikation über FastCGI bereitstellen.
+
+\subsection{WSGI}
+
+Bei WSGI\footnote{\href{http://www.python.org/dev/peps/pep-0333/}{Web Server Gateway Interface}}
+handelt es sich um eine Python-spezifische Kommunikationsschnitstelle zwischen Python-Applikationen
+und Webservern.
+
+Wie schon CGI und FastCGI stellt auch WSGI eine standardisierte Schnittstelle zur Verfügung, d.h.
+eine Webapplikation die WSGI unterstützt kann in jedem beliebigen Webserver verwendet werden, der
+WSGI unterstützt.
+
+Erwähnenswert ist dass anders als bei CGI in der Regel keine 1:1-Zuordnung zwischen URLs und Dateien
+existiert. Eine WSGI-Applikation wird normalerweise innerhalb eines Ordners (oftmals \emph{/})
+"gemounted", sodass der Webserver alle Anfragen die in diesen Ordner führen sofort an die
+WSGI-Applikation weitergibt. Diese ordnet sie dann meist einer bestimmten Funktion oder Klasse zu.
+Allerdings muss sich dazu keine einzige Python-Datei innerhalb des Document Roots befinden - im
+Falle einer Fehlkonfiguration würde der Benutzer also schlimmstenfalls ein leeres Verzeichnislisting
+oder eine \emph{File Not Found}-Fehlermeldung erhalten.
+
+Ein weiteres Feature von WSGI ist die Unterstützung von \emph{Middleware}. Dabei handelt es sich um
+Schichten die sich einfach um eine existierende Applikation legen lassen und den Datenstrom
+zwischen der über- und untergeordneten Schicht beeinflussen können. Dies kann beispielsweise dazu
+genutzt werden um Anfragen an bestimmte URLs abzufangen und anderweitig zu behandeln. Die Middleware
+in \autoref{lst:wsgi-middleware} fängt beispielsweise alle Anfragen an Dateien innerhalb des Pfades
+\emph{/shared} (relativ zum Mountpoint der WSGI-Applikation) ab und mappt selbige auf einen real
+existierenden Ordner im Dateisystem, der statische Dateien enthält.
+
+\begin{lstlisting}[caption=WSGI-Middleware,label=lst:wsgi-middleware]
+application = SharedDataMiddleware(application, {
+    '/shared': os.path.join(os.path.dirname(__file__),
+                            'shared')
+})
+\end{lstlisting}
