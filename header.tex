@@ -259,21 +259,6 @@
 \definecolor{purple}{rgb}{0.65, 0.12, 0.82}
 \definecolor{darkgreen}{cmyk}{0.7, 0, 1, 0.5}
 
-\lstdefinelanguage{JavaScript}{
-  morekeywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, for, while, do, else, case, break},
-  keywordstyle=\color{blue}\bfseries,
-  ndkeywords={this, self},
-  ndkeywordstyle=\color{darkgray}\bfseries,
-  identifierstyle=\color{black},
-  sensitive=false,
-  comment=[l]{//},
-  morecomment=[s]{/*}{*/},
-  commentstyle=\color{purple}\ttfamily,
-  stringstyle=\color{red}\ttfamily,
-  morestring=[b]',
-  morestring=[b]"
-}[keywords,comments,strings]
-
 \lstdefinelanguage{diff}
 {
     morekeywords={+, -},
@@ -287,12 +272,17 @@
 
 
 \lstset{
-  language=JavaScript,                % choose the language of the code
+  language=Python,                % choose the language of the code
   basicstyle=\ttfamily,       % the size of the fonts that are used for the code
   numbers=left,                   % where to put the line-numbers
   numberstyle=\small,      % the size of the fonts that are used for the line-numbers
   numbersep=5pt,                  % how far the line-numbers are from the code
   backgroundcolor=\color{lightgray} ,% choose the background color. You must add \usepackage{color}
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
   showspaces=false,               % show spaces adding particular underscores
   showstringspaces=false,         % underline spaces within strings
   showtabs=false,                 % show tabs within strings adding particular underscores
