@@ -1,4 +1,90 @@
-\chapter{Einleitung}
+\chapter{Grundlagen}
 \pagenumbering{arabic}
 
-\todotext{Einleitung schreiben}
+\section{Python}
+
+Bei Python handelt es sich um eine dynamische \emph{general-purpose}-Scriptsprache, d.h. eine Sprache
+die nicht für einen bestimmten Verwendungszweck wie beispielsweise Webapplikationen entwickelt
+wurde. Sie ist für alle verbreiteten Betriebssysteme verfügbar und es existieren verschiedene
+Implementierungen; die bekanntesten sind die Referenzimplementierung CPython (C), Jython (Java),
+PyPy (Python) und IronPython (C\#, .NET).
+
+Die Sprache legt großen Wert auf lesbaren Code, was insbesondere daran zu erkennen ist, dass Blöcke
+nicht wie in den meisten anderen Sprachen durch geschweifte Klammern oder
+\emph{begin}/\emph{end}-Statements definiert werden sondern einzig und allein durch die Einrückung.
+Dementsprechend führt inkonsistente Einrückung auch zu einer entsprechenden Fehlermeldung.
+
+\begin{lstlisting}[caption=Fehlerhafte Einrückung]
+>>> def fail():
+...     a = 'b'
+...      b = 'c'
+  File "<stdin>", line 3
+    b = 'c'
+    ^
+IndentationError: unexpected indent
+\end{lstlisting}
+
+
+\subsection{Webapplikationen}
+
+Wie bereits zuvor erwähnt ist Python nicht speziell auf das Web zugeschnitten. Allerdings gibt es
+neben der Option, einen Python-basierten Webserver einzusetzen diverse Möglichkeiten, Python-Code
+über einen bereits vorhandenen Webserver auszuführen.
+
+\subsubsection{Python-basierte Webserver}
+
+Insbesondere während der Entwicklung bietet sich diese Lösung an, da man dadurch extrem flexibel
+ist und beispielsweise webbasierte Debugger nutzen kann und Informationen direkt auf der Shell, in
+der der Webserver läuft, ausgeben kann.
+
+Für Produktivsysteme ist diese Option allerdings nicht optimal, da oftmals bereits ein klassischer
+Webserver wie \emph{Apache} oder \emph{nginx} läuft und man nach Möglichkeit nicht mehrere Webserver
+auf demselben System betreiben will - dies würde mehrere IP-Adressen bzw. Reverse Proxying
+voraussetzen. Darüberhinaus gibt es sinnvolle Gründe, Webserver und Python-Interpreter voneinander
+zu trennen - beispielsweise um letzteren unter einem separaten Benutzeraccount laufen zu lassen.
+
+\subsubsection{CGI}
+
+Das Common Gateway Interface, kurz CGI\footnote{\href{http://www.ietf.org/rfc/rfc3875}{RFC 3875}},
+ist der wohl bekannteste und älteste Standard, um externe Programme über einen Webserver
+auszuführen.
+
+Dabei wird für jeden Aufruf einer entsprechenden URL ein neuer Prozess gestartet; Metadaten wie die
+IP-Adresse des Clients oder die abgerufene URL werden via Umgebungsvariablen weitergegeben. Die
+Standarddatenströme \emph{stdin} und \emph{stdout} dienen der Übergabe von Request-Bodies
+(beispielsweise bei \emph{HTTP POST}) bzw. dazu, die Antwort des Programms an den Webserver
+zu übergeben.
+
+CGI ist daher sehr einfach zu implementieren. Python bietet mit dem
+\href{http://docs.python.org/library/cgi.html}{\lstinline{cgi}-Modul} Hilfsfunktionen an, die die
+Kommunikation über das Common Gateway Interface abstrahieren und beispielsweise Formulardaten
+parsen können sodass man komfortabel auf sie zugreifen kann. Allerdings muss für jeden Request ein
+neuer Prozess gestartet und jeglicher Initialisierungscode erneut ausgeführt werden. Dieser Overhead
+ist außer bei sehr einfachen Anwendungen mit wenigen Benutzern problematisch und selbst dort würde
+er zu unangenehm langen Ladezeiten führen wenn beispielsweise ein ORM-Framework initialisiert werden
+müsste.
+
+\autoref{lst:python-cgi} zeigt ein kleines Beispielscript welches einen GET-Parameter bzw. einen
+Standardtext ausgibt. Man erkennt an dem manuell ausgegebenen \emph{Content-type}-Header gut, dass
+CGI sehr simpel ist und das HTTP-Protokoll nur minimalst abstrahiert.
+
+\begin{lstlisting}[caption=Python-CGI-Skript,label=lst:python-cgi]
+#!/usr/bin/env python
+
+import cgi
+
+form = cgi.FieldStorage()
+print 'Content-type: text/plain'
+print
+print 'Hello %s' % form.getfirst('name', 'World')
+\end{lstlisting}
+
+\subsubsection{FastCGI}
+
+\todotext{fcgi}
+
+\subsubsection{WSGI}
+
+\todotext{wsgi}
+
+%WSGI\footnote{\href{http://www.python.org/dev/peps/pep-0333/}{Web Server Gateway Interface}}
