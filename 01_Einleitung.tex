@@ -112,7 +112,7 @@ Wie schon CGI und FastCGI stellt auch WSGI eine standardisierte Schnittstelle zu
 eine Webapplikation die WSGI unterstützt kann in jedem beliebigen Webserver verwendet werden, der
 WSGI unterstützt.
 
-\begin{lstlisting}[caption=Einfache WSGI-Applikation]
+\begin{lstlisting}[caption=Einfache WSGI-Applikation,label=lst:wsgi-app]
 def application(environ, start_response):
     start_response('200 OK', [('Content-Type', 'text/plain')])
     yield 'Hello World!'
@@ -140,3 +140,34 @@ application = SharedDataMiddleware(application, {
                             'shared')
 })
 \end{lstlisting}
+
+
+\section{Webframeworks}
+
+Wie in \autoref{lst:wsgi-app} zu sehen ist, ist es sehr einfach eine WSGI-Applikation zu schreiben,
+ohne zusätzliche Module zu verwenden. Allerdings möchte man in der Regel URLs auf Funktionen/Klassen
+mappen, Formulardaten einschließlich Dateiuploads verarbeiten und auch gewisse Standard-Features wie
+beispielsweise Sessions, Templating und Datenbankzugriff komfortabel nutzen können ohne die
+entsprechenden Lowlevel-APIs nutzen zu müssen.
+
+An dieser Stelle kommen Webframeworks ins Spiel. Sie abstrahieren das WSGI-Interface und bereiten
+die Daten eines HTTP-Requests entsprechend auf, bevor sie die eigentliche Applikation erreichen.
+Dadurch kann man sich als Entwickler in den meisten Fällen darauf konzentrieren, die eigentliche
+Applikationslogik zu schreiben. Für Sonderfälle wie beispielsweise Streaming von größeren Dateien
+ist oftmals zusätzlicher Code notwndig, allerdings bietet ein gutes Framework entsprechende
+Schnittstellen an, sodass man den Code des Frameworks selbst normalerweise niemals modifizieren
+muss.
+
+Bei der Wahl eines Frameworks ist darauf zu achten, dass es den Anforderungen der Applikation
+entspricht, die man damit entwickeln will. So sind viele Frameworks beispielsweise für
+CRUD\footnote{\emph{Create, Read, Update, Delete}} optimiert, da dieser Workflow in vielen
+Anwendungen häufig verwendet wird. Ein gutes Beispiel für eine solche Applikation ist ein einfaches
+Blog. Der Administrator kann dort neue Posts erstellen (\emph{Create}), Posts auflisten
+(\emph{Read}), Posts verändern (\emph{Update}) und auch löschen (\emph{Delete}). Für alle diese
+Operationen kann oftmals ein nach \emph{Schema F} aufgebautes Benutzerinterface verwendet werden,
+sodass es sich in einem entsprechenden Framework anbietet selbiges automatisch zu generieren - der
+Entwickler muss dazu oftmals nur die entsprechenden Datenbanktabellen bzw. Mapping-Objekte angeben.
+Mit entsprechenden Hooks kann ein Framework dem Entwickler auch ermöglichen, in den verschiedenen
+Operationen benutzerdefinierten Code auszuführen - nach einer erfolgreichen \emph{Create}-Operation
+würde es sich beispielsweise anbieten, den Link zum gerade erstellten Post via Twitter zu
+verbreiten.
