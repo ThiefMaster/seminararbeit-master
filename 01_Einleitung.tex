@@ -112,6 +112,12 @@ Wie schon CGI und FastCGI stellt auch WSGI eine standardisierte Schnittstelle zu
 eine Webapplikation die WSGI unterstützt kann in jedem beliebigen Webserver verwendet werden, der
 WSGI unterstützt.
 
+\begin{lstlisting}[caption=Einfache WSGI-Applikation]
+def application(environ, start_response):
+    start_response('200 OK', [('Content-Type', 'text/plain')])
+    yield 'Hello World!'
+\end{lstlisting}
+
 Erwähnenswert ist dass anders als bei CGI in der Regel keine 1:1-Zuordnung zwischen URLs und Dateien
 existiert. Eine WSGI-Applikation wird normalerweise innerhalb eines Ordners (oftmals \emph{/})
 "gemounted", sodass der Webserver alle Anfragen die in diesen Ordner führen sofort an die
