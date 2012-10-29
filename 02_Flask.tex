@@ -1,4 +1,66 @@
 \chapter{Flask}
 \section{Allgemeines}
 
-\todotext{Allgemeines zu Flask}
+Bei Flask\footnote{\href{http://flask.pocoo.org}{http://flask.pocoo.org}} handelt es sich um ein
+Python-basiertes Microframework für Webapplikationen. Das \emph{Micro} bedeutet, dass es sich bei
+Flask um ein Framework handelt, welches nur die grundlegendsten Funktionen zur Entwicklung einer
+Webanwendung zur Verfügung stellt und dem Entwickler somit ein solides Grundgerüst bietet ohne ihm
+vorzugeben, welche Datenbank bzw. welche Datenbankabstraktion er zu benutzen hat.
+
+Das Framework basiert auf der \emph{WSGI utility library}
+Werkzeug\footnote{\href{http://werkzeug.pocoo.org}{http://werkzeug.pocoo.org}} welche
+Lowlevel-Funktionen für das WSGI-Interface, URL-Routing und diverse HTTP-Features wie Header,
+Cookies, Weiterleitungen und Formulardaten zur Verfügung stellt. In der Regel kommt man mit diesen
+jedoch nicht direkt in Berührung, da Flask eigene APIs für häufig genutzte Funktionen bereitstellt.
+
+\section{Aufbau}
+
+Man kann Flask grob in die folgenden Bereiche aufteilen: \emph{Application}, \emph{Blueprints},
+\emph{Routing}, \emph{Sessions}, \emph{Templates} und \emph{Signals}.
+
+Die \emph{Application} ist eine Instanz der \lstinline{Flask}-Klasse und ist das zentrale Objekt der
+Webanwendung. Sie implementiert dabei die WSGI-Applikation und alle applikationsspezifischen
+Operationen laufen über diese Instanz.
+
+Bei \emph{Blueprints} handelt es sich vereinfacht um Objekte die über eine ähnliche API wie das
+\lstinline{Flask}-Objekt verfügen. Sie ermöglichen es, Teile einer Applikation (beispielsweise die
+Benutzerverwaltung) wiederverwendbar zu gestalten und mit einem einzigen Funktionsaufruf alle im
+\emph{Blueprint} gespeicherten URL-Handler und Templates mit einer konkreten Applikation
+(repräsentiert durch eine \lstinline{Flask}-Instanz) zu verknüpfen.
+
+Das \emph{Routing} ist dafür zuständig, URLs der Form \emph{/foo/bar/} mit Python-Funktionen oder
+-Klassen zu verknüpfen. Dabei können die einzelnen Pfadelemente auch dynamisch sein, sodass saubere
+URLs ermöglicht werden. Beispielsweise könnte die Routendefiniton für einen Artikel in einem
+Wiki der String \lstinline{'/wiki/<name>'} sein. In diesem Fall würde die verknüpfte Funktion für
+jede mit \emph{/wiki/} beginnende URL ausgeführt werden. Ebenfalls vom Routing-System unterstützt
+wird die umgekehrte Richtung, d.h. das Generieren von URLs anhand des Namens der verknüpften
+Python-Funktion. Dies erlaubt dem Entwickler, in seinen Templates keinerlei URLs hardcoden zu
+müssen. Darüberhinaus wird vermieden, dass URLs mühsam mit Stringoperationen zusammengebaut werden
+müssen - stattdessen werden einfach der Funktionsname und die jeweiligen Parameter an die Funktion
+\lstinline{url_for()} übergeben.
+
+Die in den meisten Webanwendungen dringend benötigten \emph{Sessions} sind in Flask durch signierte
+Cookies realisiert. Dabei handelt es sich um ein Cookies, welche durch eine kryptographische
+Signatur vor Manipulationen geschützt sind. Der Benutzer kann daher also den Inhalt der
+Sessionvariablen ohne Weiteres auslesen, ist jedoch nicht in der Lage ihn zu verändern. Der
+Entwickler kann auf die Session wie auf ein normales Python-\lstinline{dict} zugreifen; sollte die
+Signature eines Wertes ungültig sein, wird dieser beim Parsen des Session-Cookies ignoriert und
+taucht dementsprechend nicht in der Session auf.
+
+\emph{Templates} sind aus einer modernen Webanwendung kaum wegzudenken. Während früher -
+insbesondere zu den Anfangszeiten von PHP und Perl - oftmals HTML-Code direkt in die
+Quellcodedateien geschrieben wurde, ist diese Vermischung von Layout/Design und Logik heute
+undenkbar und würde sowohl die Lesbarkeit als auch die Wartbarkeit stark senken. Daher integriert
+Flask standardmäßig die Templateengine
+Jinja2\footnote{\href{http://jinja.pocoo.org}{http://jinja.pocoo.org}}. Dabei handelt es sich um
+eine komfortable Templateengine, die Templates \emph{just in time} in Python-Bytecode kompiliert und
+dadurch eine hohe Performance bietet. Die Templatesyntax kann angepasst werden um unabhängig vom
+Ausgabeformat die Lesbarkeit der Templates zu erhalten - beispielsweise ist die Standardsyntax, die
+\lstinline|{% ... %}| und \lstinline|{{ ... }}| nutzt für ein \LaTeX-Dokument nicht zu
+gebrauchen.
+
+\emph{Signals} ermöglichen es, Code auszuführen, wenn framework-intern bestimmte Ereignisse
+eintreten. Beispielsweise wird das \lstinline{request_tearing_down}-Signal immer dann ausgelöst,
+wenn ein HTTP-Request vollständig bearbeitet wurde. Da diese Signal immer ausgelöst wird - auch wenn
+eine Exception aufgetreten ist - bietet es sich beispielsweise dazu an, eine Datenbankverbindung zu
+schließen oder sonstige Aufräumarbeiten auszuführen.
