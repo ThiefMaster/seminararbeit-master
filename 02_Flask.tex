@@ -64,3 +64,32 @@ eintreten. Beispielsweise wird das \lstinline{request_tearing_down}-Signal immer
 wenn ein HTTP-Request vollständig bearbeitet wurde. Da diese Signal immer ausgelöst wird - auch wenn
 eine Exception aufgetreten ist - bietet es sich beispielsweise dazu an, eine Datenbankverbindung zu
 schließen oder sonstige Aufräumarbeiten auszuführen.
+
+
+\section{Grundgerüst}
+
+\autoref{lst:simple-flask-app} zeigt eine einfache \enquote{Hello World}-Applikation. Mit
+\lstinline{Flask(__name__)} wird eine neue Instanz der \lstinline{Flask}-Klasse erstellt; als
+Parameter wird der Name des aktuellen Moduls übergeben; er hilft Flask dabei, Pfade zu statischen
+Ressourcen korrekt zu bestimmen und im Debugger zu erkennen ob ein Modul vermutlich Teil der
+Applikation ist oder nicht. Der Decorator \lstinline{app.route('/')} registriert einen
+Routing-Endpoint für den Pfad \emph{/} mit dem Namen der dazugehörigen Funktion, also
+\lstinline{index}.
+
+Wenn ein Python-Script direkt, d.h. über \lstinline{python filename.py} auf der Shell, ausgeführt
+wird, so ist der \lstinline{__name__} in diesem Script immer \lstinline{'__main__'}. Dieses Feature
+von Python wird in einfachen Flask-Anwendungen in der Regel dazu benutzt, den integrierten Webserver
+zu starten, sodass die Applikation während der Entwicklung komfortabel ausgeführt und dank des
+integrierten Debuggers im Fehlerfall auch debuggt werden kann.
+
+\begin{lstlisting}[caption=Hello World mit Flask,label=lst:simple-flask-app]
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return 'Hello World!'
+
+if __name__ == '__main__':
+    app.run()
+\end{lstlisting}
