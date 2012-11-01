@@ -166,3 +166,33 @@ Beim Zugriff über \lstinline{__getitem__}, also den \lstinline{[]}-Operator, wi
 der erste Wert zurückgegeben. Bei einem solchen Zugriff ist also garantiert, dass man einen
 Unicode-String erhält. Sofern man mehrere Werte erwartet verwendet man die Methode
 \lstinline{getlist(key)}. Diese gibt wie der Name bereits andeutet immer eine Liste zurück.
+
+\section{Der Request-Kontext}
+
+In \autoref{lst:simple-flask-app-form} wurden die globalen Variablen \lstinline{session} und
+\lstinline{request} bereits lange bevor ein HTTP-Request verarbeitet wird importiert und
+\lstinline{url_for()} muss aus offensichtlichen Gründen Zugriff auf die Flask-Applikation haben -
+selbige wird allerdings nie als Parameter übergeben.
+
+Dieses Feature ist über den sogenannten \emph{Request Stack} gelöst. Dabei handelt es sich um ein
+thread-lokales Objekt welches einen Stack repräsentiert, auf den der gerade verarbeitete Request
+gelegt wird bevor benutzerdefinierter Code ausgeführt wird. Da ein Thread niemals mehrere Requests
+gleichzeitig verarbeiten kann ist also sichergestellt dass das \emph{top}-Element dieses Stacks
+immer der gerade aktive Request ist. Die Funktion \lstinline{url_for} kann also auch ohne Zugriff
+auf \lstinline{app} zu haben über den gerade aktiven Request an die dazugehörige Applikation kommen,
+da selbige im Request-Objekt referenziert wird.
+
+Bei den globalen Variablen \lstinline{request} und \lstinline{session} handelt es sich um
+Proxy-Objekte. Diese leiten jegliche Zugriffe an entsprechende Objekte auf dem Request-Stack weiter.
+Daher können sie zu einem beliebigen Zeitpunkt importiert werden und zeigen innerhalb eines Requests
+immer auf das gerade benötigte Objekt.
+
+Hierbei stellt sich natürlich die Frage, wieso man solche Variablen nicht als Parameter an die
+entsprechenden Funktionen übergibt - schließlich wäre dann klar dass die Parameter zu dem aktuellen
+Request gehören und sogar das \emph{Zen of
+Python}\footnote{\href{http://www.python.org/dev/peps/pep-0020/}{http://www.python.org/dev/peps/pep-0020/}}
+enthält die Aussage \enquote{Explicit is better than implicit}. Der Grund für dieses \emph{magic
+behavior} liegt darin, dass Flask insbesondere dafür gedacht ist, kleinere Anwendungen schnell zu
+realisieren - und es ist in der Tat entwicklerfreundlich wenn man nicht in jeder Request-Funktion
+ein zusätzliches Argument benötigt und selbiges auch noch an jede aufgerufene Funktion übergeben
+muss.
