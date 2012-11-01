@@ -112,3 +112,8 @@ def index():
 if __name__ == '__main__':
     app.run()
 \end{lstlisting}
+
+In diesem einfachen Beispiel gibt es zwar keinen Bedarf dafür, URLs zu generieren, allerdings ist es
+nichtsdestotrotz möglich. Dazu muss die Funktion \lstinline{url_for} aus dem
+\lstinline{flask}-Package importiert werden. Mit \lstinline{url_for('index')} kann dann die URL
+erzeugt werden, die in der Routendefinition angegeben wurde.
