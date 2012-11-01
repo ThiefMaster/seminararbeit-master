@@ -117,3 +117,52 @@ In diesem einfachen Beispiel gibt es zwar keinen Bedarf dafür, URLs zu generier
 nichtsdestotrotz möglich. Dazu muss die Funktion \lstinline{url_for} aus dem
 \lstinline{flask}-Package importiert werden. Mit \lstinline{url_for('index')} kann dann die URL
 erzeugt werden, die in der Routendefinition angegeben wurde.
+
+Bisher enthält das Beispiel keinerlei Code, der die Verwendung irgendeiner Programmiersprache
+rechtfertigen würde. Da kaum eine Webanwendung ausschließlich aus statischem HTML besteht bietet es
+sich an, den Beispielcode um eine personalisierte Begrüßung zu erweitern.
+\autoref{lst:simple-flask-app-form} zeigt die entsprechend erweiterte Demoanwendung. In der
+\lstinline{index}-Funktion wird nun versucht den Wert \emph{name} aus der Session auszulesen; sofern
+dieser nicht vorhanden ist wird \lstinline{'World'} als Fallback benutzt sodass keine Exception
+ausgelöst wird. In der neuen Funktion \lstinline{set_name} wird auf das Objekt
+\lstinline{request.args} zugegriffen, welches die GET-Parameter des aktuellen Requests enthält; für
+POST-Daten würde \lstinline{request.form} benutzt. Nachdem der Wert in der Session gespeichert wurde
+wird mit der Funktion \lstinline{redirect()} ein HTTP-Header gesendet der auf die Startseite
+weiterleitet.
+
+
+\begin{lstlisting}[caption=Formularverarbeitung in Flask,label=lst:simple-flask-app-form]
+from flask import Flask, url_for, request, redirect, session
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    name = session.get('name', 'World')
+    return 'Hello %s!' % name
+
+@app.route('/set_name')
+def set_name():
+    session['name'] = request.args['name']
+    return redirect(url_for('index'))
+
+if __name__ == '__main__':
+    app.run()
+\end{lstlisting}
+
+Sollte \emph{set\_name} aufgerufen werden, ohne dass ein \emph{name} in der URL angegeben wurde,
+löst der Zugriff auf \lstinline{request.args[...]} eine Exception aus.  Ein natives
+Python-\lstinline{dict} würde in einem solchen Fall eine \lstinline{KeyError}-Exception auslösen.
+Diese würde jedoch den Debugger auslösen bzw. in einem Produktivsystem als Fehler geloggt werden und
+zu einem \emph{Internal Server Error} führen. Da dies aufgrund einer ungültigen bzw.  nicht
+vorhandenen Benutzereingabe jedoch unerwünscht ist, verwendet Flask eine Exception, die sowohl von
+\lstinline{KeyError} als auch von \lstinline{BadRequest} abgeleitet ist. Letzteres führt dazu, dass
+die Exception sofern sie nicht abgefangen wird nur einen \emph{Bad Request}-HTTP-Statuscode auslöst.
+Neben diesem Verhalten gibt es auch noch einen weiteren Grund, wieso Flask eine eigene Datenstruktur
+für HTTP-Daten verwendet: Es ist durchaus zulässig dass ein Parameter mehrfach verwendet wird. In
+diesem Fall ist es in der Regel nicht erwünscht, dass nur der letzte Wert verfügbar ist, was bei
+einem klassischen \lstinline{dict} jedoch der Fall wäre. Das \lstinline{MultiDict} aus dem
+Werkzeug-Toolkit verarbeitet solche Fälle in einer möglichst entwicklerfreundlichen Art und Weise.
+Beim Zugriff über \lstinline{__getitem__}, also den \lstinline{[]}-Operator, wird grundsätzlich nur
+der erste Wert zurückgegeben. Bei einem solchen Zugriff ist also garantiert, dass man einen
+Unicode-String erhält. Sofern man mehrere Werte erwartet verwendet man die Methode
+\lstinline{getlist(key)}. Diese gibt wie der Name bereits andeutet immer eine Liste zurück.
