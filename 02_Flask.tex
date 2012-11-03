@@ -212,3 +212,21 @@ behavior} liegt darin, dass Flask insbesondere dafür gedacht ist, kleinere Anwe
 realisieren - und es ist in der Tat entwicklerfreundlich wenn man nicht in jeder Request-Funktion
 ein zusätzliches Argument benötigt und selbiges auch noch an jede aufgerufene Funktion übergeben
 muss.
+
+\section{Templates}
+
+Flask konfiguriert die Jinja2-Templateengine automatisch in einer möglich komfortablen und
+gleichzeitig sicheren Art und Weise. Die Sicherheit durch das in HTML-Templates standardmäßig
+aktivierte \emph{Autoescaping} erreicht, wodurch eine in vielen Webanwendungen vorhandene
+Sicherheitslücke - nämlich Cross-Site-Scripting - ohne Zutun des Entwicklers verhindert wird. Der
+Komfort wird dadurch erreicht, dass Funktionen wie \lstinline{url_for()} und globale Variablen wie
+\lstinline{request} und \lstinline{session} immer verfügbar sind.
+
+Um Jinja zu erweitern stellt Flask dem Entwickler über die \lstinline{Flask}-Instanz diverse
+Decorators zur Verfügung: \lstinline{template_filter()} registriert eine Funktion als Jinja-Filter,
+d.h. sie kann danach in Template auf einen anderen Wert angewendet werden. Der Unterschied zu einer
+normalen Funktion ist dabei, dass sie in unterschiedlichen Namensräumen sind und daher keine
+Kollisionen mit templatespezifischen Daten auftreten können. Mit dem Decorator
+\lstinline{context_processor} lässt sich eine Funktion registrieren die ein \lstinline{dict}
+zurückgibt welches die darin enthaltenen Daten dem Templatekontext hinzufügt. Bei diesem handelt es
+sich um den Namensraum in dem sich alle in Templates verfügbaren Variablen und Funktionen befinden.
