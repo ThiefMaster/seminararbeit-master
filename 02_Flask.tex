@@ -84,6 +84,22 @@ Eine weiterer Use-Case für den ebenfalls eine Extension existiert ist der Login
 \enquote{Eingeloggt bleiben}-Funktion beim Login und kann optional mit weiteren Extensions verknüpft
 werden sofern ein Rechtesystem benötigt wird, welches über \enquote{User ist eingeloggt} hinausgeht.
 
+Sofern man seine Webanwendung durch Cronjobs oder Kommandozeilenprogramme erweitern möchte bietet
+sich die Nutzung von \emph{Flask-Script} an. Dabei handelt es sich um eine Flask-Erweiterung die
+eine dem URL-Routing-System ähnliche Funktionalität bietet und gleichzeitig eine Umgebung
+bereitstellt, in der alle Features von Flask benutzt werden können auch ohne dass ein HTTP-Request
+verarbeitet wird. Darüberhinaus bietet sie eine einfache, Decorator-basierte API für
+Kommandozeilenargumente an, bei der es sich aber letztendlich nur im einen leichtgewichtigen Wrapper
+für das \lstinline{argparse}-Modul aus der Python-Standardbibliothek handelt.
+
+\begin{lstlisting}[label=Flask-Script]
+from flask.ext.script import Manager
+manager = Manager(app)
+
+@manager.option('-n', '--name', help='Your name')
+def hello(name):
+    print 'Hello ' + name
+\end{lstlisting}
 
 \section{Grundgerüst}
 
