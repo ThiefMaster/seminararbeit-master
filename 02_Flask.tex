@@ -230,3 +230,31 @@ Kollisionen mit templatespezifischen Daten auftreten können. Mit dem Decorator
 \lstinline{context_processor} lässt sich eine Funktion registrieren die ein \lstinline{dict}
 zurückgibt welches die darin enthaltenen Daten dem Templatekontext hinzufügt. Bei diesem handelt es
 sich um den Namensraum in dem sich alle in Templates verfügbaren Variablen und Funktionen befinden.
+
+\begin{lstlisting}[language=HTML,caption=Jinja2-Template,label=lst:jinja-tpl]
+<!doctype html>
+<title>Hello World</demo>
+Hallo {{ user.username }}
+<script>
+    alert('Hallo' + {{ user.username|tojson|safe }});
+</script>
+\end{lstlisting}
+
+\autoref{lst:jinja-tpl} zeigt ein einfaches Jinja-Template. Es enthält sowohl eine HTML- als auch
+eine JavaScript-Version von \enquote{Hello World}. Da in HTML-Templates Autoescaping aktiviert ist,
+kann die Variable \lstinline{user.username} direkt verwendet werden - sollten sich HTML-relevante
+Zeilen wie \lstinline{<} oder \lstinline{>} darin befinden werden sie automatisch durch die
+dazugehörigen HTML-Entities ersetzt. Innerhalb von \lstinline[language=HTML]{<script>}-Tags dürfen
+diese Zeichen jedoch nicht escaped werden - das einzige was dort innerhalb eines Strings nicht
+auftauchen darf ist ein schließendes Script-Tag.  Dementsprechend wird dort der Jinja-Filter
+\lstinline{safe} benutzt; er deaktiviert den Autoescaper für den übergebenen Wert. Wie man im
+Beispiel sieht können Filter auch verkettet werden. Da es sich bei \lstinline{user.username} um
+einen String handelt, der potenziell beliebige gefährliche Daten enthalten kann bietet es sich an,
+ihn durch einen JSON-Encoder in einen gültigen JavaScript-Ausdruck zu konvertieren.
+
+Bei \lstinline{user} kann es sich um beliebiges Python-Objekt handeln, welches entweder ein
+Attribute \lstinline{username} oder ein gleichnamiges Element enthält. Dies ist ein Komfortfeature
+von Jinja, da \lstinline{user.username} deutlich lesbarer ist als \lstinline{user['username']} oder
+gar eine Mischung aus beidem. Ein weiterer Grund für dieses Feature ist, dass Templates oftmals von
+Nicht-Programmierern geschrieben bzw. verändert werden und für diese spielt es keine Rolle ob es
+sich bei einem Objekt um ein \lstinline{dict} handelt oder beispielsweise ein Datenbankobjekt.
