@@ -258,3 +258,96 @@ von Jinja, da \lstinline{user.username} deutlich lesbarer ist als \lstinline{use
 gar eine Mischung aus beidem. Ein weiterer Grund für dieses Feature ist, dass Templates oftmals von
 Nicht-Programmierern geschrieben bzw. verändert werden und für diese spielt es keine Rolle ob es
 sich bei einem Objekt um ein \lstinline{dict} handelt oder beispielsweise ein Datenbankobjekt.
+
+\section{Datenbankzugriff}
+
+\emph{Flask-SQLAlchemy} ist eine Flask-Extension zur Anbindung des SQLAlchemy-Datenbankframeworks.
+Obwohl sie nicht fest in Flask integriert ist wird sie von fast jeder SQL-basierten Flask-Anwendung
+verwendet, da sie den Datenbankzugriff stark vereinfacht und sich perfekt in Flask integriert -
+letzteres dürfte damit zu tun haben, dass die Erweiterung vom Flask-Entwickler selbst stammt und nur
+aus Gründen der Modularisierung nicht integriert ist.
+
+\subsection{Einrichtung}
+
+Wie bei vielen Flask-Extensions üblich enthält auch bei Flask-SQLAlchemy eine Klasse, deren
+Konstruktor als Argument die Flask-Applikation erwartet. Diese Klasse bietet nicht nur Zugriff auf
+die Datenbank selbst sondern enthält auch die meisten SQLAlchemy-Funktionen, sodass sie nicht mehr
+separat aus den diversen SQLAlchemy-Modulen importiert werden müssen. Auch der Zugriff auf die
+Basisklasse für ORM-Modelle läuft über diese Klasse.
+
+\begin{lstlisting}[caption=Flask-SQLAlchemy-Grundstruktur,label=lst:sqlalchemy-init]
+from flask import Flask
+from flask.ext.sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+uri = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), unique=True)
+    password = db.Column(db.String(30))
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+\end{lstlisting}
+
+\autoref{lst:sqlalchemy-init} definiert eine einfache Flask-Applikation die \emph{Flask-SQLalchemy}
+initialisiert und eine Tabelle \emph{users} definiert die über die Klasse \lstinline{User} gemappt
+wird. Im Weiteren wird davon ausgegangen, dass die Tabelle bereits existiert und entsprechende Daten
+enthält.
+
+\subsection{Daten lesen}
+
+Während bei der regulären Nutzung von SQLAlchemy Queries normalerweise ein \emph{Query}-Objekt über
+die Funktion \lstinline{db.session.query(User)} erstellen vereinfacht \emph{Flask-SQLAlchemy} dies
+über eine \emph{Property} in der \lstinline{Model}-Klasse. Jeder Lesezugriff auf
+\lstinline{User.query} erstellt dabei ein neues \emph{Query}-Objekt welches durch einige nützliche
+Methoden erweitert wurde. Die Methode \lstinline{get(value)} holt ein Objekt anhand des
+Primärschlüssels aus der Datenbank. Mit \lstinline{get_or_404(value)} wird ebenfalls ein Objekt
+anhand des Primärschlüssels zurückgegeben, jedoch wird eine \lstinline{NotFound}-Exception ausgelöst
+sofern keine entsprechende Datenbankzeile gefunden wurde, was zu einer HTTP-404-Fehlermeldung führt.
+Sofern eine komplexere \emph{WHERE}-Bedingung als der Primärschlüssel nötig ist bietet sich anstelle
+von \lstinline{get_or_404} auch die Methode \lstinline{first_or_404()} an. Diese gibt wie der Name
+bereits impliziert das erste Ergebnis zurück oder bricht ab sofern keine Zeilen gefunden wurden.
+
+\subsection{Daten schreiben}
+
+Bei Schreiboperationen - einschließlich des Löschens von Daten - gibt es keine Unterschiede zur
+SQLAlchemy. Ein bestehendes Objekt kann einfach durch Zuweisung neuer Werte zu seinen Attributen
+verändert werden, ein neues Objekt wird durch Aufruf des Konstruktors erstellt. An letzteren können
+optional Attribute als \emph{keyword arguments} übergeben werden. Um ein neu erstelles Objekt
+letzendlich in der Datenbank zu speichern wird es mit \lstinline{db.session.add(obj)} hinzugefügt.
+Mit \lstinline{db.session.delete(obj)} wird ein existierendes Objekt gelöscht.
+
+\emph{Flask-SQLAlchemy} verwendet kein \emph{Autocommit}, weshalb Änderungen explizit mittels
+\lstinline{db.session.commit()} ausgeführt oder mit \lstinline{db.session.rollback()} verworfen
+werfen müssen. Den Start neuer Transaktionen übernimmt SQLAlchemy allerdings automatisch.
+
+\subsection{Signals}
+
+\emph{Flask-SQLAlchemy} bietet dem Entwickler mit den Signalen \lstinline{models_committed} und
+\lstinline{before_models_committed} die Möglichkeit, eigenen Code auszuführen, bevor bzw. nachdem
+Änderungen an gemappten Objekten in der Datenbank persistiert (\emph{COMMIT}) wurden. Dabei handelt
+es sich um ein Feature, welches von SQLAlchemy in dieser komfortablen Form standardmäßig nicht
+unterstützt wird und selbst implementiert werden müsste. Dies ist zwar einfach möglich, indem man
+jede Änderung an einem Objekt über die jeweiligen Events von SQLAlchemy mitloggt und diese
+Protokolle nach einem erfolgreichen \emph{COMMIT} abarbeitet, allerdings muss man sich dazu mit den
+weniger häufg genutzten APIs von SQLAlchemy beschäftigen, was man gerade bei einer komplexen
+Software wie einem ORM-Framework nach Möglichkeit vermeiden will.
+
+\begin{lstlisting}[caption=Flask-SQLAlchemy-Signals,label=lst:sqlalchemy-signal]
+@models_committed.connect_via(app)
+def on_models_committed(sender, changes):
+    for obj, change in changes:
+        if change == 'delete' and hasattr(obj, '__commit_delete__'):
+            obj.__commit_delete__()
+\end{lstlisting}
+
+\autoref{lst:sqlalchemy-signal} zeigt eine mögliche Verwendung des
+\lstinline{models_committed}-Signals. Für jedes gelöschte Objekt wird die Methode
+\lstinline{__commit_delete__} ausgeführt sofern sie existiert. Dies ermöglicht beispielsweise, mit
+Datenbankeinträgen verknüpfte Dateien genau dann zu löschen, wenn der dazugehörige Datenbankeintrag
+erfolgreich gelöscht wurde.
