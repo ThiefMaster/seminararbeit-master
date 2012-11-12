@@ -1,3 +1,94 @@
 \chapter{Flask - Praktische Nutzung}
 
-\todotext{Reales Beispiel dokumentieren. Vermutlich \href{https://github.com/ThiefMaster/hskatom}{https://github.com/ThiefMaster/hskatom}}
+Die Hochschule Karlsruhe bietet auf ihrer Website eine Onlineversion des \enquote{Schwarzen Bretts}.
+Dabei handelt es sich um eine reine HTML-Seite, die zwar im Browser ohne Weiteres angezeigt werden
+kann, jedoch mangels einer RSS/Atom-Version nicht mit Feed-Readern kompatibel ist. Da ein Newsfeed
+bei einer solchen Seite jedoch angebracht ist und den Komfort stark erhöht, war die einfachste
+Lösung die Entwicklung einer externen Seite, die die HTML-Seite ausliest und in einen Atom-Feed
+konvertiert.
+
+\section{Anforderungen}
+
+Obwohl es sich um eine sehr einfache Anwendung handelt gibt es diverse Anforderungen die erfüllt
+sein sollten:
+
+\begin{itemize}
+\item Da es äußerst ineffizient wäre, die HTML-Seite bei jedem Aufruf des Feeds erneut abzurufen,
+muss diese für eine gewisse Zeit gecacht werden. Neben den kürzeren Ladezeiten des Feeds verringert
+dies ebenfalls die Last des Hochschulservers, da keine unnötigen Anfragen gesendet werden. Da das
+schwarze Brett in der Regel nicht sehr oft aktualisiert wird und keine kurzfristigen Ankündigungen
+enthält bietet sich eine Cache-Dauer im niedrigen Stundenbereich an.
+
+\item Die Applikation greift auf externe Ressourcen zu, deren Adresse sich theoretisch jederzeit
+ändern kann. Externe URLs sollten daher nicht direkt im Code stehen sondern konfigurierbar sein
+
+\item Um den Code nicht übermäßig zu verkomplizieren soll die HTML-Seite mit der Python-Bibliothek
+\emph{BeautifulSoup} geparst werden statt beispielsweise eine XSL-Transformation zu verwenden. Dies
+führt zwar dazu, dass bei einer Änderung an der HTML-Struktur Codeänderungen notwendig werden,
+allerdings kann dieser Nachteil vernachlässigt werden.
+
+\item Es sollen mehrere Feeds unterstützt werden. Dies ist notwendig da es auch mehrere Schwarze
+Bretter gibt. Der Einfachheit halber werden nur die Neuigkeiten des Fachgebiets Informatik in Feeds
+konvertiert, jedoch ist eine Erweiterung auf andere Fachgebiete durch die konfigurierbaren URLs
+prinzipiell möglich.
+
+\item Es sollen saubere URLs verwendet werden und auf GET-Parameter nach Möglichkeit verzichtet
+werden. Da der einzige dynamische Parameter der Name des Feeds ist, bietet sich eine URL nach dem
+Schema \emph{/<name>.atom} an. Während Dateierweiterungen oftmals im Widerspruch zu \emph{Clean
+URLs} stehen sind sie in diesem Fall zulässig und auch sinnvoll, da somit sofort klar ist, dass sich
+hinter der URL ein Atom-Feed verbirgt.
+
+\item Neben den Feeds soll es eine HTML-Seite geben auf der die verfügbaren Feeds verlinkt sind. Der
+dazugehörige HTML-Code soll in eine Template ausgelagert werden.
+\end{itemize}
+
+\section{Implementierung als Flask-Anwendung}
+
+\subsection{Externe Module und Flask-Extensions}
+
+Neben dem in den Anforderungen bereits erwähnten \emph{BeautifulSoup} zum Parsen der
+HTML-Seiten bietet sich für das Caching die Flask-Erweiterung \emph{Flask-Cache} an. Diese bietet
+eine einfache Abstraktion verschiedener Cache-Backends (Dateisystem, Memcached, Redis, \ldots).
+Durch diese Abstraktion können erweiterte Features von Redis oder Memcached nicht genutzt werden;
+dies ist jedoch in diesem Fall unproblematisch da diese nicht benötigt werden.
+
+\subsection{Initialisierung und Konfiguration}
+
+\begin{lstlisting}[caption=HSKAtom - Initialisierung,label=lst:hskatom-init]
+# Initialize application
+app = Flask(__name__)
+app.config.from_pyfile('hskatom.cfg')
+cache = Cache(app)
+
+# Config vars
+NEWS_URLS = app.config.setdefault('NEWS_URLS', {})
+FEED_TITLE = app.config.setdefault('FEED_TITLE',
+    'Hochschule Karlsruhe - News')
+NEWS_CACHE_DURATION = app.config.setdefault(
+    'NEWS_CACHE_DURATION', 3600)
+\end{lstlisting}
+
+In \autoref{lst:hskatom-init} wird zunächst eine Flask-Anwendung erstellt. Flask bietet verschiedene
+Möglichkeiten, konfigurierbare Einstellungen zu laden. In diesem Fall werden die Einstellungen mit
+der Methode \lstinline{app.config.from_pyfile()} aus einer Python-Datei imporiert. Alle dort
+definierten globalen Variablen, die ausschließlich aus Großbuchstaben und Unterstrichen bestehen,
+werden danach über das unter dem Namen \lstinline{app.config} erreichbare \lstinline{dict}
+zugänglich gemacht. Während es in diesem Fall weder notwendig noch angebracht ist, Python-Code in
+der Konfigurationsdatei zu verwenden, der über einfache Variablenzuweisungen hinausgeht, hat die
+Möglichkeit beliebigen Code zu benutzen diverse Vorteile. Beispielsweise ermöglicht dies, einzelne
+Werte aus anderen zusammenzusetzen oder Datumswerte direkt als \lstinline{datetime}-Objekt
+auszudrücken.
+
+Nachdem die Konfiguration geladen wurde, wird das Cache-Interface erstellt - dabei handelt es sich
+um eine Instanz der Klasse \lstinline{Cache}. Diese befindet sich in dem Modul
+\lstinline{flask.ext.cache}. Bei dem Modul \lstinline{flask.ext} handelt es sich um einen Proxy, der
+automatisch das zu der Extension gehörende Modul bzw. Package importiert. Dabei werden sowohl neue
+Module unterstützt, die unter dem globalen Namen \lstinline{flask_XYZ} verfügbar sind als auch alte
+Module, die sich im Namespace \lstinline{flaskext} befinden und somit unter dem Namen
+\lstinline{flaskext.XYZ} verfügbar sind.
+
+Der Einfachheit halber werden die applikationsspezifischen Konfigurationsoptionen in globalen
+Variablen abgelegt; die Nutzung der \lstinline{setdefault()}-Methode garantiert jedoch zusätzlich,
+dass sie auch in \lstinline{app.config} definiert sind und sinnvolle Defaultwerte besitzen die
+zumindest nicht zu einem Fehler führen wenn ihnen in der Konfigurationsdatei kein Wert zugewiesen
+wurde.
