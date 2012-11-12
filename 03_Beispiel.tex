@@ -173,3 +173,63 @@ kann. Im Firefox wird beispielsweise eine Vorschau der Einträge und ein Interfa
 Feeds angezeigt.
 
 \img{hskatom-firefox.png}{400px}{Atom-Feed-Vorschau im Firefox}{Atom-Feed-Vorschau im Firefox}
+
+\subsection{Abruf der Daten}
+
+Um die Daten des Schwarzen Bretts in ein brauchbares Format zu konvertieren müssen sie zunächst vom
+Hochschulserver abgerufen werden. Die einfachste Möglichkeit dazu ist das \emph{urllib}-Modul aus
+der Python-Standardbibliothek. Aus dem HTML-Code lässt sich mit \emph{BeautifulSoup} ein DOM-Tree
+aufbauen, der danach mit regulären Python-Kontrollstrukturen wie Schleifen durchlaufen werden kann.
+Die relevanten Inhalte der Seite befinden sich innerhalb von
+\lstinline[language=HTML]{<div id="content">}. Dieses Element enthält mehrere DIV-Elemente mit
+\lstinline[language=HTML]{class="csc-default"} und einer einzigartigen ID. Titel und Text der
+einzelnen Einträge sind ebenfalls voneinander getrennt, sodass auch diese problemlos geparst werden
+können. Der Titel befindet sich in einem H4-Element während der Text in einem DIV mit
+\lstinline[language=HTML]{class="last"} zu finden ist, welches wiederum ein Element mit
+\lstinline[language=HTML]{class="content"} enthält. Da der Body eines Eintrags HTML enthalten kann,
+kann dieser nicht wie der Titel einfach über das \lstinline{text}-Attribut ausgelesen werden. Das
+Attribute \lstinline{contents} enthält jedoch alle Kindelemente, die unabhängig vom Typ in einen
+String konvertiert werden können. Dies geschrieht durch Anwendung der Funktion \lstinline{unicode}
+auf alle Elemente der \lstinline{contents}-Liste durch die Funktion
+\lstinline{map(callable, iterable)}. Die einzelnen Elemente der Liste werden mit der
+\lstinline{join()}-Funktion aneinandergehängt.
+
+\subsection{Caching}
+
+Um den Rückgabewert von \lstinline{retrieve_news()} zu cachen bietet \emph{Flask-Cache} den
+Decorator \lstinline{cache.memoize(duration)}. Dieser cacht den Rückgabewert der damit dekorierten
+Funktion für die angegebene Zeit. Als Cache-Key wird dabei eine Kombination aus dem Funktionsnamen
+und den übergebenen Argumenten verwendet. Der Code, der die Funktion aufruft, kann sie wie bisher
+nutzen - das Caching geschieht vollkommen transparent. Ohne Caching hätte es sich jedoch angeboten,
+den Timestamp des Feeds in der \lstinline{atom()}-Funktion zu erzeugen und nicht ebenfalls von
+\lstinline{retrieve_news()} zurückgeben zu lassen. Da sich der gecachte Inhalt jedoch nie verändert,
+solange er im Cache liegt, ist es angebracht, auch den Timestamp des Feeds nur dann zu ändern, wenn
+auch potentiell neue Daten vorliegen.
+
+
+\begin{lstlisting}[caption=HSKAtom - Cache,label=lst:hskatom-cache]
+@cache.memoize(NEWS_CACHE_DURATION)
+def retrieve_news(key):
+    """retrieve news from the hska site"""
+\end{lstlisting}
+
+In dieser Anwendung ist es in der Regel nicht notwendig, den Cache zu löschen, weshalb diese Option
+nicht in die Anwendung integriert wurde. Sollte es jedoch aus irgendeinem Grund notwendig sein,
+bietet \emph{Flask-Cache} dazu mit der Methode \lstinline{cache.delete_memoized(func, ...)}
+die Möglichkeit, die gecachten Rückgabewerte der einer Funktion zu löschen, wobei optional auch die
+Parameter angegeben werden können um nicht den gesamten Cache der Funktion löschen zu müssen.
+Letzteres würde sich beispielsweise anbieten, wenn man nur den Cache eines bestimmten Feeds löschen
+wollte.
+
+\subsection{Die fertige Flask-Anwendung}
+
+\autoref{lst:hskatom} enthält den vollständigen Code der \emph{HSKAtom}-Flask-Anwendung. Mit gerade
+einmal 75 Zeilen Code, von denen gut ein Drittel auf das Parsen des HTML-Codes entfallen ist sie ein
+gutes Beispiel dafür, wie kompakt eine Webanwendung mit Flask sein kann. Selbstverständlich ist der
+Code wenn man Framework und externe Module dazurechnet deutlich länger als beispielsweise PHP-Code
+der komplett auf externen Code verzichtet - dies ist allerdings kein Nachteil sondern zeugt von
+gutem Programmierstil (möglichst viel wiederverwendbaren Code nutzen) und anders als PHP bietet
+Python mit \emph{Virtualenv} und \emph{pip} eine komfortable Möglichkeit, Abhängigkeiten automatisch
+zu installieren.
+
+\lstinputlisting[caption=HSKAtom-Applikation,label=lst:hskatom]{code/hskatom.py}
