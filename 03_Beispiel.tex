@@ -134,3 +134,42 @@ app.url_map.converters['newskey'] = NewsKeyConverter
 def atom(key):
     """create the atom feed"""
 \end{lstlisting}
+
+\subsection{Erzeugen des Atom-Feeds}
+
+Beim Atom-Format handelt es sich um einen in \footnote{\href{http://www.ietf.org/rfc/rfc4287}{RFC
+4287}} beschriebenen Standard zur \emph{Content Syndication} der von den meisten verbreiteten
+Browsern und Standalone-Feed-Readern unterstützt wird. Die Funktion \lstinline{retrieve_news()} ruft
+die Ankündigungen von dem entsprechenden Schwarzen Brett ab und gibt sie als Python-Datenstruktur
+zurück. Da ein Atom-Feed zwingend einen Last-Updated-Timestamp benötigt gibt die Funktion neben den
+eigentlichen Daten auch einen solchen Timestamp zurück. Da die Einträge auf dem Schwarzen Breet
+jedoch nicht mit einem Datum versehen sind und dort sowieso nur aktuell relevante Einträge angezeigt
+werden, wird den einzelnen Einträgen ein Dummy-Datum, der 1.1.1970, zugewiesen. Schöner wäre es
+natürlich die Schwarzen Bretter regelmäßig auf neue Einträge zu überprüfen und das Datum, an dem ein
+Eintrag dazukommt, zu verwenden. Dazu wären jedoch Cronjobs oder regelmäßige Zugriffe auf die
+Anwendung notwendig. Da jeder Eintrag auf der Hochschulseite eine eindeutige ID hat kann diese
+sowohl als eindeutige ID des Feed-Eintrags benutzt werden als auch um jeden Eintrag mit einer URL zu
+versehen, die zum Original auf der Hochschulseite führt.
+
+\begin{lstlisting}[caption=HSKAtom - Atom-Feed,label=lst:hskatom-atom]
+def atom(key):
+    items, last_update = retrieve_news(key)
+    url = NEWS_URLS[key]
+    feed = AtomFeed(FEED_TITLE, feed_url=request.url,
+        url=url, subtitle=key, updated=last_update)
+    ts = datetime(1970, 1, 1)
+    for item in items:
+        item_url = '%s#%s' % (url, item['id'])
+        feed.add(item['title'], item['content'],
+            content_type='html', id=item_url,
+            updated=ts, url=item_url)
+    return feed.get_response()
+\end{lstlisting}
+
+Die Methode \lstinline{get_response()} des \lstinline{AtomFeed}-Objekts gibt ein
+\lstinline{Response}-Objekt zurück, welches neben dem XML-Code des Feeds auch den dazugehörigen
+Content-Type \emph{application/atom+xml} enthält, sodass ein Browser die Daten korrekt verarbeiten
+kann. Im Firefox wird beispielsweise eine Vorschau der Einträge und ein Interface zum abonnieren des
+Feeds angezeigt.
+
+\img{hskatom-firefox.png}{400px}{Atom-Feed-Vorschau im Firefox}{Atom-Feed-Vorschau im Firefox}
