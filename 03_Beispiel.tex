@@ -92,3 +92,42 @@ Variablen abgelegt; die Nutzung der \lstinline{setdefault()}-Methode garantiert 
 dass sie auch in \lstinline{app.config} definiert sind und sinnvolle Defaultwerte besitzen die
 zumindest nicht zu einem Fehler führen wenn ihnen in der Konfigurationsdatei kein Wert zugewiesen
 wurde.
+
+\subsection{Routing}
+
+Die Feed-Übersicht ist die Startseite der Anwendung, daher ist sie über \emph{/} zu erreichen; der
+dazugehörige \lstinline{app.route()}-Aufruf ist selbsterklärend und entspricht exakt dem Beispiel in
+\autoref{lst:simple-flask-app}.
+
+\begin{lstlisting}[caption=HSKAtom - Routing,label=lst:hskatom-route-index]
+@app.route('/')
+def index():
+    """show feed list"""
+\end{lstlisting}
+
+Für die jeweiligen Feeds sollen jedoch nicht beliebige Namen akzeptiert werden sondern nur solche,
+zu denen auch eine URL konfiguriert ist. Eine Möglichkeit, die zu tun, wäre ein einfaches
+\lstinline{if}-Statement und ein Aufruf von \lstinline{abort(404)} im Falle eines ungültigen Namens.
+Schöner ist es jedoch, das Routingsystem entsprechend zu konfigurieren, sodass bereits frühzeitig
+nur gültige Werte zugelassen werden. Dies ist mit dem in \autoref{lst:hskatom-route-atom} gezeigten
+\emph{argument converter} realisiert. Dazu wird eine neue Klasse erstellt, die von der im
+Werkzeug-Routing-System definierten Klasse \lstinline{BeseConverter} erbt. In dieser wird der Regex
+\lstinline{'[^/]+'}, der ein beliebiges Pfadsegement (also ein String, der keinen Slash enthält)
+matchen würde, durch einen alternativen Regex ersetzt, der genau die Schlüssel des
+\lstinline{NEWS_URLS}-Dicts matcht. Durch das Hinzufügen der neuen Klasse zum
+\lstinline{app.url_map.converters}-Dict steht diese im Routingsystem zur Verfügung und kann in einer
+Routendefinition genutzt werden; die Syntax dazu ist \lstinline{'<converter:varname>'}.
+
+\begin{lstlisting}[caption=HSKAtom - Routing,label=lst:hskatom-route-atom]
+class NewsKeyConverter(BaseConverter):
+    """Matches a news key"""
+
+    def __init__(self, map):
+        BaseConverter.__init__(self, map)
+        self.regex = '(?:%s)' % '|'.join(re.escape(x) for x in NEWS_URLS)
+app.url_map.converters['newskey'] = NewsKeyConverter
+
+@app.route('/<newskey:key>.atom')
+def atom(key):
+    """create the atom feed"""
+\end{lstlisting}
