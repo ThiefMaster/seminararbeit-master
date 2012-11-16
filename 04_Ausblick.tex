@@ -69,4 +69,26 @@ sich leicht einen Überblick verschaffen kann, ob ein bestimmtes Framework für 
 Use-Case geeignet sein könnte oder nicht.
 
 \section{Fazit}
-\todotext{Nun ja, ein Fazit. Was sonst ;)}
+Flask bietet sowohl Entwicklern, die erst wenig Erfahrungen mit Python oder Webanwendungen haben,
+als auch erfahrenen Python-Entwicklern, die im Handumdrehen ihren eigenen WSGI-Server schreiben
+könnten, eine komfortable Möglichkeit, Webanwendungen schnell und sauber zu entwickeln.
+
+Dadurch, dass Flask-Anwendungen aus einer einzigen Datei bestehen können, kann man gerade kleinere
+Anwendungen sehr einfach damit entwickeln. Die Nutzung von Decorators ermöglicht es, Funktionen
+einfach so zu schreiben, dass sie die gewünschte Aufgabe erfüllen, und dann mit einer einzigen
+zusätzlichen Zeile Code mit einer URL zu verknüpfen.
+
+Aber auch größere Anwendungen sind problemlos möglich - man kann beim Routing auch komplett auf
+Decorators verzichten und somit alle URLs an einer zentralen Stelle definieren. Dadurch und durch
+die Modularisierung der Anwendung mittels Blueprints bleibt auch eine große Flask-Anwendung gut
+wartbar und erlaubt es einem neuen Entwickler, sich schnell einzuarbeiten.
+
+Auch ein bestehendes Projekt, welches beispielsweise CGI nutzt, kann somit unter Umständen sehr
+einfach zu Flask migriert werden indem man den Code einer jeden Datei in eine Funktion verpackt und
+mit dem entsprechenden Routing-Decorator versieht. Selbstverständlich ist danach noch Refactoring
+notwendig, um beispielsweise \emph{duplicate code} zu entfernen und die Vorteile von Flask zu nutzen
+- insbesondere beispielsweise das Erzeugen von URLs anhand der dazugehörigen Funktion.
+
+Kurz gesagt, Flask ist ein komfortables Framework und wenn man Python nutzen will und nicht bereits
+viel Erfahrung mit einem anderen Framework wie Django besitzt ist es auf jeden Fall einen Blick
+wert.
