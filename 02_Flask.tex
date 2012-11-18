@@ -351,3 +351,25 @@ def on_models_committed(sender, changes):
 \lstinline{__commit_delete__} ausgeführt sofern sie existiert. Dies ermöglicht beispielsweise, mit
 Datenbankeinträgen verknüpfte Dateien genau dann zu löschen, wenn der dazugehörige Datenbankeintrag
 erfolgreich gelöscht wurde.
+
+
+\section{Komplexere Anwendungen}
+
+Bei der Entwicklung von komplexeren Flask-Anwendungen mit viel Logik und dementsprechend oftmals
+auch vielen View-Funktionen ist es angebracht, diese auf mehrere Module zu verteilen und anstelle
+des \lstinline{@app.route()}-Decorators die URL-Mappings an einer zentralen Stelle zu definieren.
+Kombiniert mit der Nutzung von Blueprints zur Trennung von voneinander unabhängigen Teilen der
+Anwendung - beispielsweise Benutzerverwaltung und Administrationbereich - ermöglicht dies auch bei
+einer umfangreichen Webanwendung noch die einfache Wiederverwendbarkeit von Modulen und erlaubt
+einem Entwickler, der sich in den Code einer existierenden Anwendung einwarbeiten muss, ein
+schnelles Zurechtfinden im Code.
+
+Sofern man das Verhalten von Flask in einer Art und Weise beeinflussen möchte, die nicht über die
+verhandenen APIs möglich ist, bietet es sich an, die \lstinline{Flask}-Klasse nicht direkt zu
+verwenden sondern eine eigene Klasse davon abzuleiten, in der man die entsprechenden Methoden
+überschreibt. Ein relative häufiger Use-Case dafür war beispielsweise, die cookiebasierte
+Session-Implementierung durch eine andere zu ersetzen. Da es sich dabei jedoch um eine relativ
+häufig benötigte Funktion handelt - sobald man größere Daten in der Session ablegen oder dem
+Benutzer auch keinen Lesezugriff auf die Session-Daten gewähren möchte, sind Cookies nicht mehr das
+Mittel der Wahl - bietet Flask inzwischen mit \lstinline{app.session_interface} eine einfache
+Möglichkeit, die genutzte Session-Implementierung zu ändern.
