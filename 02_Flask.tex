@@ -1,14 +1,14 @@
 \chapter{Flask}
 \section{Allgemeines}
 
-Bei Flask\footnote{\href{http://flask.pocoo.org}{http://flask.pocoo.org}} handelt es sich um ein
+Bei Flask\footnote{\href{http://flask.pocoo.org}{http://flask.pocoo.org} \citep{flask}} handelt es sich um ein
 Python-basiertes Microframework für Webapplikationen. Das \emph{Micro} bedeutet, dass es sich bei
 Flask um ein Framework handelt, welches nur die grundlegendsten Funktionen zur Entwicklung einer
 Webanwendung zur Verfügung stellt und dem Entwickler somit ein solides Grundgerüst bietet ohne ihm
 vorzugeben, welche Datenbank bzw. welche Datenbankabstraktion er zu benutzen hat.
 
 Das Framework basiert auf der \emph{WSGI utility library}
-Werkzeug\footnote{\href{http://werkzeug.pocoo.org}{http://werkzeug.pocoo.org}} welche
+Werkzeug\footnote{\href{http://werkzeug.pocoo.org}{http://werkzeug.pocoo.org} \citep{werkzeug}} welche
 Lowlevel-Funktionen für das WSGI-Interface, URL-Routing und diverse HTTP-Features wie Header,
 Cookies, Weiterleitungen und Formulardaten zur Verfügung stellt. In der Regel kommt man mit diesen
 jedoch nicht direkt in Berührung, da Flask eigene APIs für häufig genutzte Funktionen bereitstellt.
@@ -52,7 +52,7 @@ insbesondere zu den Anfangszeiten von PHP und Perl - oftmals HTML-Code direkt in
 Quellcodedateien geschrieben wurde, ist diese Vermischung von Layout/Design und Logik heute
 undenkbar und würde sowohl die Lesbarkeit als auch die Wartbarkeit stark senken. Daher integriert
 Flask standardmäßig die Templateengine
-Jinja2\footnote{\href{http://jinja.pocoo.org}{http://jinja.pocoo.org}}. Dabei handelt es sich um
+Jinja2\footnote{\href{http://jinja.pocoo.org}{http://jinja.pocoo.org} \citep{jinja}}. Dabei handelt es sich um
 eine komfortable Templateengine, die Templates \emph{just in time} in Python-Bytecode kompiliert und
 dadurch eine hohe Performance bietet. Die Templatesyntax kann angepasst werden um unabhängig vom
 Ausgabeformat die Lesbarkeit der Templates zu erhalten - beispielsweise ist die Standardsyntax, die
@@ -69,13 +69,13 @@ schließen oder sonstige Aufräumarbeiten auszuführen.
 
 Da Flask wie zuvor schon erwähnt ein Microframework ist liefert es nur die wichtigsten Module mit.
 Allerdings gibt es für so gut wie jeden wichtigen Use-Case eine
-Extension\footnote{\href{http://flask.pocoo.org/extensions}{http://flask.pocoo.org/extensions}}. Die
-wohl wichtigsten und bekanntesten Extensions sind dabei \emph{Flask-SQLAlchemy} zur Integration des
+Extension\footnote{\href{http://flask.pocoo.org/extensions}{http://flask.pocoo.org/extensions} \citep{flaskext}}.
+Die wohl wichtigsten und bekanntesten Extensions sind dabei \emph{Flask-SQLAlchemy} zur Integration des
 ORM-Frameworks
-\emph{SQLAlchemy}\footnote{\href{http://www.sqlalchemy.org}{http://www.sqlalchemy.org}},
+\emph{SQLAlchemy}\footnote{\href{http://www.sqlalchemy.org}{http://www.sqlalchemy.org} \citep{sqlalchemy}},
 \emph{Flask-Uploads} zur komfortablen Verarbeitung von hochgeladenen Dateien, \emph{Flask-WTF} zur
 Integration von
-WTForms\footnote{\href{http://wtforms.simplecodes.com}{http://wtforms.simplecodes.com}}, einem
+WTForms\footnote{\href{http://wtforms.simplecodes.com}{http://wtforms.simplecodes.com} \citep{wtforms}}, einem
 Python-Modul zum deklarativen Erstellen und Validieren von HTML-Formularen, und \emph{Flask-Mail}
 zum Verwenden von E-Mails.
 
@@ -206,7 +206,8 @@ immer auf das gerade benötigte Objekt.
 Hierbei stellt sich natürlich die Frage, wieso man solche Variablen nicht als Parameter an die
 entsprechenden Funktionen übergibt - schließlich wäre dann klar dass die Parameter zu dem aktuellen
 Request gehören und sogar das \emph{Zen of
-Python}\footnote{\href{http://www.python.org/dev/peps/pep-0020/}{http://www.python.org/dev/peps/pep-0020/}}
+Python}\footnote{\href{http://www.python.org/dev/peps/pep-0020/}{http://www.python.org/dev/peps/pep-0020/}
+\citep{zenofpython}}
 enthält die Aussage \enquote{Explicit is better than implicit}. Der Grund für dieses \emph{magic
 behavior} liegt darin, dass Flask insbesondere dafür gedacht ist, kleinere Anwendungen schnell zu
 realisieren - und es ist in der Tat entwicklerfreundlich wenn man nicht in jeder Request-Funktion

@@ -48,7 +48,8 @@ zu trennen - beispielsweise um letzteren unter einem separaten Benutzeraccount l
 
 \subsection{CGI}
 
-Das Common Gateway Interface, kurz CGI\footnote{\href{http://www.ietf.org/rfc/rfc3875}{RFC 3875}},
+Das Common Gateway Interface, kurz CGI\footnote{\href{http://www.ietf.org/rfc/rfc3875}{RFC 3875}
+\citep{rfc3875}},
 ist der wohl bekannteste und älteste Standard, um externe Programme über einen Webserver
 auszuführen.
 
@@ -59,7 +60,8 @@ Standarddatenströme \emph{stdin} und \emph{stdout} dienen der Übergabe von Req
 zu übergeben.
 
 CGI ist daher sehr einfach zu implementieren. Python bietet mit dem
-\href{http://docs.python.org/library/cgi.html}{\lstinline{cgi}-Modul} Hilfsfunktionen an, die die
+\href{http://docs.python.org/library/cgi.html}{\lstinline{cgi}-Modul}\footnote{\citep{pycgi}}
+Hilfsfunktionen an, die die
 Kommunikation über das Common Gateway Interface abstrahieren und beispielsweise Formulardaten
 parsen können sodass man komfortabel auf sie zugreifen kann. Allerdings muss für jeden Request ein
 neuer Prozess gestartet und jeglicher Initialisierungscode erneut ausgeführt werden. Dieser Overhead
@@ -104,7 +106,8 @@ eine WSGI-Applikation über FastCGI bereitstellen.
 
 \subsection{WSGI}
 
-Bei WSGI\footnote{\href{http://www.python.org/dev/peps/pep-0333/}{Web Server Gateway Interface}}
+Bei WSGI\footnote{\href{http://www.python.org/dev/peps/pep-0333/}{Web Server Gateway
+Interface} \citep{wsgi}}
 handelt es sich um eine Python-spezifische Kommunikationsschnitstelle zwischen Python-Applikationen
 und Webservern.
 
