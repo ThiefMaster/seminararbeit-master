@@ -18,7 +18,7 @@ jedoch nicht direkt in Berührung, da Flask eigene APIs für häufig genutzte Fu
 Man kann Flask grob in die folgenden Bereiche aufteilen: \emph{Application}, \emph{Blueprints},
 \emph{Routing}, \emph{Sessions}, \emph{Templates} und \emph{Signals}.
 
-Die \emph{Application} ist eine Instanz der \lstinline{Flask}-Klasse und ist das zentrale Objekt der
+Die \emph{Application} ist eine Instanz der \lstinline{Flask}-Klasse und das zentrale Objekt der
 Webanwendung. Sie implementiert dabei die WSGI-Applikation und alle applikationsspezifischen
 Operationen laufen über diese Instanz.
 
@@ -61,7 +61,7 @@ gebrauchen.
 
 \emph{Signals} ermöglichen es, Code auszuführen, wenn framework-intern bestimmte Ereignisse
 eintreten. Beispielsweise wird das \lstinline{request_tearing_down}-Signal immer dann ausgelöst,
-wenn ein HTTP-Request vollständig bearbeitet wurde. Da diese Signal immer ausgelöst wird - auch wenn
+wenn ein HTTP-Request vollständig bearbeitet wurde. Da dieses Signal immer ausgelöst wird - auch wenn
 eine Exception aufgetreten ist - bietet es sich beispielsweise dazu an, eine Datenbankverbindung zu
 schließen oder sonstige Aufräumarbeiten auszuführen.
 
@@ -98,6 +98,7 @@ manager = Manager(app)
 
 @manager.option('-n', '--name', help='Your name')
 def hello(name):
+    """Says hello"""
     print 'Hello ' + name
 \end{lstlisting}
 
@@ -168,7 +169,7 @@ if __name__ == '__main__':
 Sollte \emph{set\_name} aufgerufen werden, ohne dass ein \emph{name} in der URL angegeben wurde,
 löst der Zugriff auf \lstinline{request.args[...]} eine Exception aus.  Ein natives
 Python-\lstinline{dict} würde in einem solchen Fall eine \lstinline{KeyError}-Exception auslösen.
-Diese würde jedoch den Debugger auslösen bzw. in einem Produktivsystem als Fehler geloggt werden und
+Diese würde jedoch den Debugger starten bzw. in einem Produktivsystem als Fehler geloggt werden und
 zu einem \emph{Internal Server Error} führen. Da dies aufgrund einer ungültigen bzw.  nicht
 vorhandenen Benutzereingabe jedoch unerwünscht ist, verwendet Flask eine Exception, die sowohl von
 \lstinline{KeyError} als auch von \lstinline{BadRequest} abgeleitet ist. Letzteres führt dazu, dass
@@ -217,7 +218,7 @@ muss.
 \section{Templates}
 
 Flask konfiguriert die Jinja2-Templateengine automatisch in einer möglich komfortablen und
-gleichzeitig sicheren Art und Weise. Die Sicherheit durch das in HTML-Templates standardmäßig
+gleichzeitig sicheren Art und Weise. Die Sicherheit wird durch das in HTML-Templates standardmäßig
 aktivierte \emph{Autoescaping} erreicht, wodurch eine in vielen Webanwendungen vorhandene
 Sicherheitslücke - nämlich Cross-Site-Scripting - ohne Zutun des Entwicklers verhindert wird. Der
 Komfort wird dadurch erreicht, dass Funktionen wie \lstinline{url_for()} und globale Variablen wie
@@ -234,7 +235,7 @@ sich um den Namensraum in dem sich alle in Templates verfügbaren Variablen und 
 
 \begin{lstlisting}[language=HTML,caption=Jinja2-Template,label=lst:jinja-tpl]
 <!doctype html>
-<title>Hello World</demo>
+<title>Hello World</title>
 Hallo {{ user.username }}
 <script>
     alert('Hallo' + {{ user.username|tojson|safe }});
@@ -246,10 +247,10 @@ eine JavaScript-Version von \enquote{Hello World}. Da in HTML-Templates Autoesca
 kann die Variable \lstinline{user.username} direkt verwendet werden - sollten sich HTML-relevante
 Zeilen wie \lstinline{<} oder \lstinline{>} darin befinden werden sie automatisch durch die
 dazugehörigen HTML-Entities ersetzt. Innerhalb von \lstinline[language=HTML]{<script>}-Tags dürfen
-diese Zeichen jedoch nicht escaped werden - das einzige was dort innerhalb eines Strings nicht
-auftauchen darf ist ein schließendes Script-Tag.  Dementsprechend wird dort der Jinja-Filter
+diese Zeichen jedoch nicht escaped werden - das Einzige, was dort innerhalb eines Strings nicht
+auftauchen darf, ist ein schließendes Script-Tag.  Dementsprechend wird dort der Jinja-Filter
 \lstinline{safe} benutzt; er deaktiviert den Autoescaper für den übergebenen Wert. Wie man im
-Beispiel sieht können Filter auch verkettet werden. Da es sich bei \lstinline{user.username} um
+Beispiel sieht, können Filter auch verkettet werden. Da es sich bei \lstinline{user.username} um
 einen String handelt, der potenziell beliebige gefährliche Daten enthalten kann bietet es sich an,
 ihn durch einen JSON-Encoder in einen gültigen JavaScript-Ausdruck zu konvertieren.
 
@@ -369,8 +370,8 @@ Sofern man das Verhalten von Flask in einer Art und Weise beeinflussen möchte, 
 verhandenen APIs möglich ist, bietet es sich an, die \lstinline{Flask}-Klasse nicht direkt zu
 verwenden sondern eine eigene Klasse davon abzuleiten, in der man die entsprechenden Methoden
 überschreibt. Ein relative häufiger Use-Case dafür war beispielsweise, die cookiebasierte
-Session-Implementierung durch eine andere zu ersetzen. Da es sich dabei jedoch um eine relativ
-häufig benötigte Funktion handelt - sobald man größere Daten in der Session ablegen oder dem
+Session-Implementierung durch eine andere zu ersetzen. Dabei handelt es sich dabei jedoch um eine
+relativ häufig benötigte Funktion, denn sobald man größere Daten in der Session ablegen oder dem
 Benutzer auch keinen Lesezugriff auf die Session-Daten gewähren möchte, sind Cookies nicht mehr das
-Mittel der Wahl - bietet Flask inzwischen mit \lstinline{app.session_interface} eine einfache
-Möglichkeit, die genutzte Session-Implementierung zu ändern.
+Mittel der Wahl. Aus diesem Grund bietet Flask inzwischen mit \lstinline{app.session_interface} eine
+einfache Möglichkeit, die genutzte Session-Implementierung zu ändern.

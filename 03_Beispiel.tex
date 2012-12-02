@@ -39,7 +39,7 @@ URLs} stehen sind sie in diesem Fall zulässig und auch sinnvoll, da somit sofor
 hinter der URL ein Atom-Feed verbirgt.
 
 \item Neben den Feeds soll es eine HTML-Seite geben auf der die verfügbaren Feeds verlinkt sind. Der
-dazugehörige HTML-Code soll in eine Template ausgelagert werden.
+dazugehörige HTML-Code soll in ein Template ausgelagert werden.
 \end{itemize}
 
 \section{Implementierung als Flask-Anwendung}
@@ -137,8 +137,8 @@ def atom(key):
 
 \subsection{Erzeugen des Atom-Feeds}
 
-Beim Atom-Format handelt es sich um einen in \footnote{\href{http://www.ietf.org/rfc/rfc4287}{RFC
-4287} \citep{rfc4287}} beschriebenen Standard zur \emph{Content Syndication} der von den meisten verbreiteten
+Beim Atom-Format handelt es sich um einen in RFC 4287\footnote{\href{http://www.ietf.org/rfc/rfc4287}{RFC
+4287} \citep{rfc4287}} beschriebenen Standard zur \emph{Content Syndication}, der von den meisten verbreiteten
 Browsern und Standalone-Feed-Readern unterstützt wird. Die Funktion \lstinline{retrieve_news()} ruft
 die Ankündigungen von dem entsprechenden Schwarzen Brett ab und gibt sie als Python-Datenstruktur
 zurück. Da ein Atom-Feed zwingend einen Last-Updated-Timestamp benötigt gibt die Funktion neben den
