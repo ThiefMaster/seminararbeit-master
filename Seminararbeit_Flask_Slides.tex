@@ -125,6 +125,19 @@ def application(environ, start_response):
 \end{frame}
 
 \begin{frame}
+  \frametitle{Aufbau}
+  \begin{itemize}
+    \item Application: Zentrale Klasse und WSGI-Anwendung (implementiert \lstinline{__call__()})
+    \item Blueprints: Module, die eigene Routen, Templates, etc. enthalten können. Erlaubt bessere
+          Strukturierung einer komplexeren Anwendung
+    \item Routing: Mapping von URLs auf Python-Funktionen
+    \item Sessions: Signierte Cookies
+    \item Templates (Jinja 2)
+    \item Signals: Hooks um z.B. vor jedem Request Code auszuführen
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
   \frametitle{Werkzeug}
   \begin{itemize}
     \item \enquote{WSGI utility library}
