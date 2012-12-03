@@ -77,7 +77,7 @@
     \item Blöcke werden durch Einrückung definiert
   \end{itemize}
 
-  \begin{exampleblock}{Python-Code}
+  \begin{exampleblock}{Python-Code}<2>
     \begin{lstlisting}
 def hello_world():
     if False:
@@ -95,7 +95,7 @@ def hello_world():
     \item Schnittstelle zwischen Webservern und Python-Applikationen
     \item WSGI-Applikationen sind \emph{callables} (also z.B. Funktionen)
   \end{itemize}
-  \begin{exampleblock}{Hello WSGI}
+  \begin{exampleblock}{Hello WSGI}<2>
     \begin{lstlisting}
 def application(environ, start_response):
     start_response('200 OK', [('content-type', 'text/plain')])
