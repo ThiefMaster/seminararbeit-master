@@ -87,6 +87,23 @@ def hello_world():
   \end{exampleblock}
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{WSGI}
+  \begin{itemize}
+    \item Web Server Gateway Interface
+    \item Python-Standard PEP-333: \url{http://www.python.org/dev/peps/pep-0333}
+    \item Schnittstelle zwischen Webservern und Python-Applikationen
+    \item WSGI-Applikationen sind \emph{callables} (also z.B. Funktionen)
+  \end{itemize}
+  \begin{exampleblock}{Hello WSGI}
+    \begin{lstlisting}
+def application(environ, start_response):
+    start_response('200 OK', [('content-type', 'text/plain')])
+    return ['Hello World!']
+    \end{lstlisting}
+  \end{exampleblock}
+\end{frame}
+
 \section{Flask}
 \begin{frame}
   \frametitle{Allgemeines}
