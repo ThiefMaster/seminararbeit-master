@@ -162,4 +162,47 @@ def application(environ, start_response):
   \end{itemize}
 \end{frame}
 
+\section{Flask-Tutorial}
+
+\begin{frame}
+  \frametitle{Zielsetzung}
+  \begin{itemize}
+    \item Ein einfaches Feedback-Formular zu Flask selbst
+    \item Zufrieden/unzufrieden inkl. kurzer Begründung
+    \item Real existierende Applikation: \url{http://feedback.flask.pocoo.org}
+    \item Quellcode: \url{https://github.com/mitsuhiko/flask-feedback}
+  \end{itemize}
+
+  \begin{exampleblock}{Screenshot}
+    \begin{center}
+      \includegraphics[width=0.5\textwidth]{images/flask-feedback.png}
+    \end{center}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Wieso ein Feedbackformular?}
+  \begin{itemize}
+    \item Einfache Applikation; hier jedoch weiter vereinfacht
+    \item Datenbankanbindung
+    \item Benutzerdaten (prinzipiell nicht vertrauenswürdig!)
+    \item Nur wenige Python-Packages bzw. Flask-Extensions benötigt
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Flask-Extensions}
+  \begin{itemize}
+    \item Erinnerung: Flask ist ein Microframework
+    \item Zusätzliche Funktionalität durch Erweiterungen
+    \item Flask-SQLAlchemy: Einbindung des Datenbankframeworks \emph{SQLAlchemy}
+    \item Flask-Script: Kommandozeilenbefehle
+    \begin{itemize}
+      \item Dev-Server inkl. Debugger
+      \item Python-Shell
+      \item Benutzerdefinierte Befehle (oftmals \emph{createdb} und \emph{dropdb})
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
 \end{document}
