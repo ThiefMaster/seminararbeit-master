@@ -36,7 +36,9 @@
 }
 
 \usepackage{graphicx}
+\usepackage{hyperref}
 
+\urlstyle{same}
 \hypersetup{pdfpagemode=FullScreen,pdfpagelayout=SinglePage,pdfstartview=Fit}
 
 \date{19.12.2012}
@@ -65,7 +67,7 @@
 \end{frame}
 
 
-\section{Grundlagen}
+\section{Python}
 \begin{frame}[fragile]
   \frametitle{Python}
   \begin{itemize}
@@ -85,8 +87,9 @@ def hello_world():
   \end{exampleblock}
 \end{frame}
 
+\section{Flask}
 \begin{frame}
-  \frametitle{Flask}
+  \frametitle{Allgemeines}
   \begin{itemize}
     \item Microframework für Webapplikationen
     \item Sehr komfortabel zu nutzen - \enquote{Flask is Fun}
@@ -105,18 +108,19 @@ def hello_world():
 \end{frame}
 
 \begin{frame}
-  \frametitle{Flask: Werkzeug}
+  \frametitle{Werkzeug}
   \begin{itemize}
     \item \enquote{WSGI utility library}
     \item Debugger
     \item Request/Response-Klassen
     \item Hilfsfunktionen für HTTP (Cookies, Dateiuploads, \ldots)
     \item URL-Routing
+    \item \url{http://werkzeug.pocoo.org}
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Flask: Jinja 2}
+  \frametitle{Jinja 2}
   \begin{itemize}
     \item Templateengine
     \item Unterstützt Unicode/UTF-8
@@ -124,6 +128,7 @@ def hello_world():
     \item Vererbung
     \item Optionale Sandbox
     \item Autoescaping (HTML)
+    \item \url{http://jinja.pocoo.org}
   \end{itemize}
 \end{frame}
 
