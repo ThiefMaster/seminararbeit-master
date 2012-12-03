@@ -55,11 +55,75 @@
 \section*{Überblick}
 \frame{\tableofcontents}
 
+
 \section{Motivation}
 \begin{frame}
   \frametitle{Motivation}
+  \includegraphics[width=0.6\textwidth]{images/python-logo.png} \hspace*{\fill}
+  \newline
+  \hspace*{\fill} \includegraphics[width=0.5\textwidth]{images/flask-logo.pdf}
+\end{frame}
+
+
+\section{Grundlagen}
+\begin{frame}[fragile]
+  \frametitle{Python}
   \begin{itemize}
-    \item TODO
+    \item Dynamische Programmiersprache
+    \item Oftmals als Skriptsprache genutzt
+    \item Mehrere Paradigmen
+    \item Blöcke werden durch Einrückung definiert
+  \end{itemize}
+
+  \begin{exampleblock}{Python-Code}
+    \begin{lstlisting}
+def hello_world():
+    if False:
+        print 'World demise on 2012-12-21.'
+    print 'Hello World.'
+    \end{lstlisting}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Flask}
+  \begin{itemize}
+    \item Microframework für Webapplikationen
+    \item Sehr komfortabel zu nutzen - \enquote{Flask is Fun}
+    \item Ausführliche Dokumentation
+    \item \enquote{based on Werkzeug, Jinja 2 and good intentions}
+    \item Open Source (BSD-Lizenz)
+  \end{itemize}
+
+  \begin{block}{BSD-Lizenz}<2>
+    \begin{itemize}
+      \item Kopieren, Verändern, Weitergeben ist erlaubt
+      \item Copyright-Vermerk des Originals darf nicht entfernt werden
+      \item Änderungen können unter einer beliebigen Lizenz veröffentlich werden (auch proprietär)
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Flask: Werkzeug}
+  \begin{itemize}
+    \item \enquote{WSGI utility library}
+    \item Debugger
+    \item Request/Response-Klassen
+    \item Hilfsfunktionen für HTTP (Cookies, Dateiuploads, \ldots)
+    \item URL-Routing
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Flask: Jinja 2}
+  \begin{itemize}
+    \item Templateengine
+    \item Unterstützt Unicode/UTF-8
+    \item Kompiliert Templates zu Python-Bytecode
+    \item Vererbung
+    \item Optionale Sandbox
+    \item Autoescaping (HTML)
   \end{itemize}
 \end{frame}
 
