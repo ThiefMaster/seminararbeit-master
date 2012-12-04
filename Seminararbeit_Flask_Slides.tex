@@ -149,19 +149,6 @@ def application(environ, start_response):
   \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Jinja 2}
-  \begin{itemize}
-    \item Templateengine
-    \item Unterstützt Unicode/UTF-8
-    \item Kompiliert Templates zu Python-Bytecode
-    \item Vererbung
-    \item Optionale Sandbox
-    \item Autoescaping (HTML)
-    \item \url{http://jinja.pocoo.org}
-  \end{itemize}
-\end{frame}
-
 \section{Flask-Tutorial}
 
 \begin{frame}
@@ -183,15 +170,16 @@ def application(environ, start_response):
 \begin{frame}
   \frametitle{Wieso ein Feedbackformular?}
   \begin{itemize}
-    \item Einfache Applikation; hier jedoch weiter vereinfacht
+    \item Einfache Applikation
     \item Datenbankanbindung
-    \item Benutzerdaten (prinzipiell nicht vertrauenswürdig!)
+    \item Formularverarbeitung
     \item Nur wenige Python-Packages bzw. Flask-Extensions benötigt
+    \item Verwendet mit Flask-SQLAlchemy die wichtigste Flask-Erweiterung
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Flask-Extensions}
+  \frametitle{Einschub: Flask-Extensions}
   \begin{itemize}
     \item Erinnerung: Flask ist ein Microframework
     \item Zusätzliche Funktionalität durch Erweiterungen
@@ -202,6 +190,141 @@ def application(environ, start_response):
       \item Python-Shell
       \item Benutzerdefinierte Befehle (oftmals \emph{createdb} und \emph{dropdb})
     \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Initialisierung}
+  \begin{itemize}
+    \item Flask initialisieren
+    \item Defaultwerte für die Konfiguration
+    \item Konfigurationsdatei laden
+    \item Flask-SQLAlchemy initialisieren
+  \end{itemize}
+  \begin{exampleblock}{Eine Flask-Anwendung wird geboren\ldots}
+    \begin{lstlisting}
+app = Flask(__name__)
+app.config['FEEDBACK_PER_PAGE'] = 30
+app.config.from_pyfile('settings.cfg')
+db = SQLAlchemy(app)
+    \end{lstlisting}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Einschub: Flask-SQLAlchemy}
+  \begin{itemize}
+    \item Initialisierung der SQLAlchemy-Session
+    \item Fassade für diversen häufig benötigte SQLAlchemy-Objekte
+    \item \lstinline{db.Model} ist die Basisklasse für alle Mappings
+    \item Basiert auf \lstinline{declarative_base()} von SQLAlchemy
+    \item Enthält zusätzliche Erweiterungen
+      \begin{itemize}
+        \item \lstinline{Feedback.query.filter(id=42).all()}
+        \item \lstinline{Feedback.query.paginate()}
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Datenbankmodell}
+  \begin{itemize}
+    \item Nutzung des in SQLAlchemy enthaltenen ORMs
+    \item Nur eine einzige Tabelle benötigt
+    \item Tabellenname wird implizit aus dem Klassennamen gebildet
+  \end{itemize}
+  \begin{exampleblock}{Definition des SQLAlchemy-Modells}
+    \begin{lstlisting}
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    kind = db.Column(db.Integer)
+    text = db.Column(db.String(1000))
+    version = db.Column(db.String(40))
+    pub_date = db.Column(db.DateTime)
+    \end{lstlisting}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Routing}
+  \begin{exampleblock}{Routen in der Feedback-Anwendung}
+    \begin{lstlisting}
+@app.route('/', methods=('GET', 'POST'))
+def give_fb():
+    pass
+
+@app.route('/message/<int:id>')
+def show(id):
+    pass
+
+@app.route('/happy', defaults={'page': 1})
+@app.route('/happy/page/<int:page>')
+def happy(page):
+    pass
+    \end{lstlisting}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Anwendungslogik}
+  \begin{exampleblock}{View-Funktion der \enquote{Give Feedback}-Seite}
+    \begin{lstlisting}
+def give_fb():
+    if request.method == 'POST':
+        text = request.form['feedback']
+        if len(text) <= 140:
+            fb = Feedback(text=text)
+            db.session.add(fb)
+            db.session.commit()
+            return redirect(
+                url_for('show', id=fb.id))
+        return redirect(url_for('give_fb'))
+    return render_template('give_fb.html')
+    \end{lstlisting}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Einschub: Jinja 2}
+  \begin{itemize}
+    \item Standard-Templateengine von Flask
+    \item Auch separat verfügbar
+    \item Kompiliert Templates zu Python-Bytecode
+    \item Template-Vererbung
+    \item Optionale Sandbox
+    \item Autoescaping (HTML)
+    \item \url{http://jinja.pocoo.org}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Jinja2-Template}
+  \begin{exampleblock}{Template der \enquote{Give Feedback}-Seite}
+    \begin{lstlisting}[syntax=HTML]
+{% extends 'layout.html' %}
+{% block title %}Give Feedback{% endblock %}
+{% block body %}
+ <h2>We Love Feedback</h2>
+ <form action="{{request.url}}" method=post>
+  <p class=text>
+   <textarea name=feedback cols=50 rows=2>
+   </textarea>
+ </form>
+{% endblock %}
+    \end{lstlisting}
+  \end{exampleblock}
+\end{frame}
+
+\section{Fazit}
+\begin{frame}
+  \frametitle{Fazit}
+  \begin{itemize}
+    \item Komfortables Webframework
+    \item Kein Bloat
+    \item Rapid Application Development
+    \item Browserbasierter Debugger
+    \item Gut lesbarer Code (übersichtlich und sinnvoll kommentiert)
+    \item Doku und ausführliches Tutorial auf \url{http://flask.pocoo.org}
   \end{itemize}
 \end{frame}
 
