@@ -220,7 +220,6 @@ db = SQLAlchemy(app)
     \item Initialisierung der SQLAlchemy-Session
     \item Fassade für diversen häufig benötigte SQLAlchemy-Objekte
     \item \lstinline{db.Model} ist die Basisklasse für alle Mappings
-    \item Basiert auf \lstinline{declarative_base()} von SQLAlchemy
     \item Enthält zusätzliche Erweiterungen
       \begin{itemize}
         \item \lstinline{Feedback.query.filter(id=42).all()}
